@@ -19,6 +19,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  drilled: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['select'])
@@ -28,6 +32,8 @@ const svgMarkup = ref('')
 const errorMessage = ref('')
 const tooltip = ref(null)
 const markerPositions = ref([])
+const isReady = ref(false)
+const animationMode = ref('zoom-out')
 let resizeObserver
 
 const getPath = (event) => event.target.closest?.('path[id]')
@@ -76,6 +82,17 @@ const configureMap = async () => {
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet')
   svg.setAttribute('aria-label', '대한민국 17개 시도 선택 지도')
 
+  const mapGroup = svg.querySelector('g') ?? svg
+  const bounds = mapGroup.getBBox()
+  const paddingRatio = props.drilled ? 0.075 : 0.045
+  const horizontalPadding = Math.max(bounds.width * paddingRatio, 12)
+  const verticalPadding = Math.max(bounds.height * paddingRatio, 12)
+
+  svg.setAttribute(
+    'viewBox',
+    `${bounds.x - horizontalPadding} ${bounds.y - verticalPadding} ${bounds.width + horizontalPadding * 2} ${bounds.height + verticalPadding * 2}`,
+  )
+
   mapRoot.value.querySelectorAll('path[id]').forEach((path) => {
     path.setAttribute('tabindex', '0')
     path.setAttribute('role', 'button')
@@ -84,10 +101,18 @@ const configureMap = async () => {
 
   updateActivePath()
   updateMarkerPositions()
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      isReady.value = true
+    })
+  })
 }
 
 const loadMap = async () => {
   errorMessage.value = ''
+  isReady.value = false
+  animationMode.value = props.drilled ? 'zoom-in' : 'zoom-out'
   svgMarkup.value = ''
   tooltip.value = null
   markerPositions.value = []
@@ -170,6 +195,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   <div
     ref="mapRoot"
     class="region-map"
+    :class="[animationMode, { 'is-ready': isReady }]"
     @pointerover="handlePointerOver"
     @pointerout="handlePointerOut"
     @click="handleClick"
@@ -222,6 +248,24 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   width: 100%;
   height: 100%;
   padding: 22px 48px 18px;
+  opacity: 0;
+  transform-origin: center;
+  transition:
+    opacity 320ms ease,
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.region-map.zoom-in:not(.is-ready) .map-content {
+  transform: scale(0.82);
+}
+
+.region-map.zoom-out:not(.is-ready) .map-content {
+  transform: scale(1.16);
+}
+
+.region-map.is-ready .map-content {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .map-content :deep(svg) {

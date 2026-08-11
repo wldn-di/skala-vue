@@ -22,7 +22,12 @@ const emit = defineEmits(['select', 'detail'])
 <template>
   <article
     class="weather-mini-card"
-    :class="{ 'is-selected': selected, 'is-large': size === 'large' }"
+    :class="{
+      'is-selected': selected,
+      'is-large': size === 'large',
+      'is-hot': weather.temp >= 25,
+      'is-cool': weather.temp < 25,
+    }"
     role="button"
     tabindex="0"
     :aria-label="`${weather.name} 날씨 선택`"
@@ -30,28 +35,64 @@ const emit = defineEmits(['select', 'detail'])
     @keydown.enter="emit('select', weather)"
     @keydown.space.prevent="emit('select', weather)"
   >
-    <div class="mini-heading">
-      <strong>{{ weather.name }}</strong>
-      <span>{{ weather.emoji }}</span>
-    </div>
-    <div class="mini-weather">
-      <b>{{ weather.temp }}°</b>
-      <small>{{ weather.status }}</small>
-    </div>
+    <template v-if="size === 'large'">
+      <header class="large-card-heading">
+        <div>
+          <small>REGION WEATHER</small>
+          <strong>{{ weather.fullName }}</strong>
+        </div>
+        <span class="large-weather-icon" aria-hidden="true">{{ weather.emoji }}</span>
+      </header>
 
-    <span v-if="weather.temp >= 25" class="temperature-label hot">
-      🔥 더움 (25도 이상)
-    </span>
-    <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+      <div class="large-weather-main">
+        <b>{{ weather.temp }}<sup>°</sup></b>
+        <div>
+          <strong>{{ weather.status }}</strong>
+          <small>최고 {{ weather.high }}° · 최저 {{ weather.low }}°</small>
+        </div>
+      </div>
 
-    <button
-      class="detail-button"
-      type="button"
-      :aria-label="`${weather.name} 날씨 상세보기`"
-      @click.stop="emit('detail', weather)"
-    >
-      상세보기
-    </button>
+      <footer class="large-card-footer">
+        <span v-if="weather.temp >= 25" class="temperature-label hot">
+          🔥 더움 (25도 이상)
+        </span>
+        <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+
+        <button
+          class="detail-button"
+          type="button"
+          :aria-label="`${weather.name} 날씨 상세보기`"
+          @click.stop="emit('detail', weather)"
+        >
+          상세 <i aria-hidden="true">→</i>
+        </button>
+      </footer>
+    </template>
+
+    <template v-else>
+      <div class="mini-heading">
+        <strong>{{ weather.name }}</strong>
+        <span>{{ weather.emoji }}</span>
+      </div>
+      <div class="mini-weather">
+        <b>{{ weather.temp }}°</b>
+        <small>{{ weather.status }}</small>
+      </div>
+
+      <span v-if="weather.temp >= 25" class="temperature-label hot">
+        🔥 더움 (25도 이상)
+      </span>
+      <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+
+      <button
+        class="detail-button"
+        type="button"
+        :aria-label="`${weather.name} 날씨 상세보기`"
+        @click.stop="emit('detail', weather)"
+      >
+        상세보기
+      </button>
+    </template>
   </article>
 </template>
 
@@ -156,52 +197,145 @@ const emit = defineEmits(['select', 'detail'])
 }
 
 .weather-mini-card.is-large {
+  isolation: isolate;
+  position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   min-height: 0;
-  padding: 17px 18px 15px;
+  padding: 14px 15px 13px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #fff 20%, #f7fbff 100%);
   border-radius: 18px;
 }
 
-.is-large .mini-heading strong {
-  font-size: 1rem;
+.weather-mini-card.is-large::before {
+  position: absolute;
+  z-index: -1;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  content: '';
+  opacity: 0.55;
+  top: -45px;
+  right: -35px;
 }
 
-.is-large .mini-heading span {
-  font-size: 1.4rem;
+.weather-mini-card.is-large.is-hot::before {
+  background: radial-gradient(circle, #ffe4d2, rgba(255, 228, 210, 0));
 }
 
-.is-large .mini-weather {
+.weather-mini-card.is-large.is-cool::before {
+  background: radial-gradient(circle, #dcecff, rgba(220, 236, 255, 0));
+}
+
+.large-card-heading,
+.large-weather-main,
+.large-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.large-card-heading > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.large-card-heading small {
+  color: #3182f6;
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+.large-card-heading strong {
+  overflow: hidden;
+  margin-top: 2px;
+  color: #344054;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.large-weather-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  font-size: 1.25rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(222, 230, 238, 0.85);
+  border-radius: 11px;
+  box-shadow: 0 6px 15px rgba(29, 59, 93, 0.08);
+}
+
+.large-weather-main {
   align-self: center;
+  justify-content: flex-start;
   gap: 10px;
-  margin-top: 6px;
+  margin: 5px 0;
 }
 
-.is-large .mini-weather b {
-  font-size: clamp(1.8rem, 3.2vh, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
+.large-weather-main > b {
+  color: #1f2f43;
+  font-size: clamp(1.9rem, 3.5vh, 2.6rem);
+  font-weight: 450;
+  line-height: 0.9;
+  letter-spacing: -0.08em;
 }
 
-.is-large .mini-weather small {
-  font-size: 0.72rem;
-  font-weight: 700;
+.large-weather-main sup {
+  margin-left: 2px;
+  font-size: 0.48em;
+  letter-spacing: 0;
 }
 
-.is-large .temperature-label {
+.large-weather-main > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.large-weather-main strong {
+  color: #425466;
+  font-size: 0.68rem;
+}
+
+.large-weather-main small {
+  margin-top: 3px;
+  color: #8b95a1;
+  font-size: 0.52rem;
+}
+
+.large-card-footer {
+  min-height: 25px;
+}
+
+.large-card-footer .temperature-label {
   width: fit-content;
-  margin-top: 8px;
-  padding: 6px 9px;
-  font-size: 0.64rem;
-  background: #f6f8fa;
+  margin: 0;
+  padding: 5px 7px;
+  font-size: 0.55rem;
+  background: rgba(246, 248, 250, 0.9);
   border-radius: 999px;
 }
 
-.is-large .detail-button {
-  right: 14px;
-  bottom: 14px;
-  padding: 6px 9px;
-  font-size: 0.62rem;
+.large-card-footer .detail-button {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 7px;
+  color: #4e5968;
+  font-size: 0.55rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e3e9ef;
   border-radius: 8px;
+}
+
+.large-card-footer .detail-button i {
+  color: #3182f6;
+  font-style: normal;
 }
 </style>

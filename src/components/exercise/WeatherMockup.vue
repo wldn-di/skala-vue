@@ -221,6 +221,7 @@ const removeRestaurant = (restaurantId) => {
               :active-name="mapActiveName"
               :regions="mapRegions"
               :restaurant-counts="mapRestaurantCounts"
+              :drilled="isDrilled"
               @select="selectFromMap"
             />
             <button
@@ -292,20 +293,30 @@ const removeRestaurant = (restaurantId) => {
 
           <div v-if="activePanel === 'weather'" class="weather-detail">
             <div class="temperature-hero">
-              <div>
-                <strong>{{ selectedWeather.temp }}<sup>°C</sup></strong>
-                <p>{{ selectedWeather.status }}</p>
+              <div class="temperature-content">
+                <small>현재 기온 · 과제용 Mock 12:00</small>
+                <div class="temperature-line">
+                  <strong>{{ selectedWeather.temp }}<sup>°C</sup></strong>
+                  <p>{{ selectedWeather.status }}</p>
+                </div>
+                <span v-if="selectedWeather.temp >= 25" class="large-label hot">
+                  🔥 더움 (25도 이상)
+                </span>
+                <span v-else class="large-label cool">❄️ 선선함 (25도 미만)</span>
               </div>
-              <span v-if="selectedWeather.temp >= 25" class="large-label hot">
-                🔥 더움 (25도 이상)
-              </span>
-              <span v-else class="large-label cool">❄️ 선선함 (25도 미만)</span>
+              <span class="weather-hero-icon" aria-hidden="true">{{ selectedWeather.emoji }}</span>
             </div>
 
-            <p class="weather-copy">
-              {{ selectedWeather.name }}은 현재 {{ selectedWeather.status }} 상태예요.
-              오늘 기온에 어울리는 메뉴도 함께 골라보세요.
-            </p>
+            <div class="weather-advice">
+              <span aria-hidden="true">💡</span>
+              <p>
+                <small>TODAY'S TIP</small>
+                <strong>
+                  {{ selectedWeather.name }}은 현재 {{ selectedWeather.status }} 상태예요.
+                  오늘 기온에 어울리는 메뉴도 함께 골라보세요.
+                </strong>
+              </p>
+            </div>
 
             <dl class="weather-metrics">
               <div>
@@ -916,25 +927,54 @@ const removeRestaurant = (restaurantId) => {
 }
 
 .temperature-hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 17px;
-  background: linear-gradient(135deg, #f2f8ff, #e9f3ff);
+  min-height: 164px;
+  padding: 22px 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.9), transparent 8rem),
+    linear-gradient(135deg, #edf6ff, #dfeeff);
   border: 1px solid #dcecff;
-  border-radius: 17px;
+  border-radius: 21px;
 }
 
-.temperature-hero > div {
+.temperature-hero::after {
+  position: absolute;
+  width: 165px;
+  height: 165px;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  content: '';
+  top: -69px;
+  right: -40px;
+}
+
+.temperature-content {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.temperature-content > small {
+  color: #4e79ac;
+  font-size: 0.57rem;
+  font-weight: 800;
+}
+
+.temperature-line {
   display: flex;
   align-items: flex-end;
-  gap: 9px;
+  gap: 12px;
+  margin: 9px 0 12px;
 }
 
 .temperature-hero strong {
   color: #172b46;
-  font-size: clamp(2.5rem, 4.6vh, 3.5rem);
-  font-weight: 400;
+  font-size: clamp(3.8rem, 7.8vh, 5.2rem);
+  font-weight: 350;
   line-height: 0.85;
   letter-spacing: -0.08em;
 }
@@ -946,10 +986,26 @@ const removeRestaurant = (restaurantId) => {
 }
 
 .temperature-hero p {
-  margin: 0 0 2px;
+  margin: 0 0 5px;
   color: #425b78;
-  font-size: 0.82rem;
+  font-size: 1rem;
   font-weight: 800;
+}
+
+.weather-hero-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 106px;
+  height: 106px;
+  font-size: 4.5rem;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  backdrop-filter: blur(9px);
+  box-shadow: 0 14px 34px rgba(35, 79, 128, 0.12);
 }
 
 .large-label {
@@ -969,39 +1025,103 @@ const removeRestaurant = (restaurantId) => {
   background: #e3f0ff;
 }
 
-.weather-copy {
-  margin: 10px 3px 0;
-  color: #6b7684;
-  font-size: 0.67rem;
-  line-height: 1.55;
+.weather-advice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  margin-top: 10px;
+  padding: 11px 14px;
+  background: #f8fafc;
+  border: 1px solid #e9edf2;
+  border-radius: 15px;
+}
+
+.weather-advice > span {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: #fff3e9;
+  border-radius: 12px;
+}
+
+.weather-advice p {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+}
+
+.weather-advice small {
+  color: #ff7a2d;
+  font-size: 0.49rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.weather-advice strong {
+  margin-top: 3px;
+  color: #536274;
+  font-size: 0.65rem;
+  line-height: 1.45;
 }
 
 .weather-metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   margin: 10px 0 0;
 }
 
 .weather-metrics > div {
+  position: relative;
   min-width: 0;
-  padding: 9px 7px;
-  text-align: center;
+  min-height: 72px;
+  padding: 14px 10px 12px 50px;
+  text-align: left;
   background: #f8fafc;
   border: 1px solid #e9edf2;
-  border-radius: 11px;
+  border-radius: 15px;
+}
+
+.weather-metrics > div::before {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: 0.95rem;
+  background: #eaf3ff;
+  border-radius: 10px;
+  content: '🌡️';
+  top: 19px;
+  left: 11px;
+}
+
+.weather-metrics > div:nth-child(2)::before {
+  content: '💧';
+}
+
+.weather-metrics > div:nth-child(3)::before {
+  content: '☔';
+}
+
+.weather-metrics > div:nth-child(4)::before {
+  content: '🍃';
 }
 
 .weather-metrics dt {
   color: #8b95a1;
-  font-size: 0.52rem;
+  font-size: 0.57rem;
 }
 
 .weather-metrics dd {
   overflow: hidden;
   margin: 4px 0 0;
   color: #344054;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1010,12 +1130,13 @@ const removeRestaurant = (restaurantId) => {
 .popular-foods {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-top: 10px;
-  padding: 10px 11px;
+  min-height: 72px;
+  padding: 12px 13px;
   background: #fff8f3;
   border: 1px solid #ffe6d4;
-  border-radius: 13px;
+  border-radius: 16px;
 }
 
 .popular-foods > div {
@@ -1032,13 +1153,13 @@ const removeRestaurant = (restaurantId) => {
   display: block;
   margin-top: 2px;
   color: #7b3c16;
-  font-size: 0.66rem;
+  font-size: 0.72rem;
 }
 
 .popular-foods > span {
-  padding: 5px 7px;
+  padding: 7px 9px;
   color: #9a4b1b;
-  font-size: 0.57rem;
+  font-size: 0.61rem;
   font-weight: 700;
   background: #fff;
   border-radius: 999px;
@@ -1051,12 +1172,13 @@ const removeRestaurant = (restaurantId) => {
   gap: 10px;
   width: 100%;
   margin-top: auto;
-  padding: 11px 12px;
+  min-height: 62px;
+  padding: 12px 15px;
   color: inherit;
   text-align: left;
   background: #26364a;
   border: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   transition: transform 150ms ease, background 150ms ease;
 }
 
@@ -1068,10 +1190,10 @@ const removeRestaurant = (restaurantId) => {
 .menu-recommend-link > span {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .menu-recommend-link > div {
@@ -1082,7 +1204,7 @@ const removeRestaurant = (restaurantId) => {
 
 .menu-recommend-link small {
   color: #9fb4cc;
-  font-size: 0.55rem;
+  font-size: 0.59rem;
 }
 
 .menu-recommend-link strong,
@@ -1092,7 +1214,7 @@ const removeRestaurant = (restaurantId) => {
 
 .menu-recommend-link strong {
   margin-top: 2px;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
 }
 
 .weather-list-card {
@@ -1209,7 +1331,7 @@ const removeRestaurant = (restaurantId) => {
 }
 
 @media (min-width: 1200px) and (max-height: 780px) {
-  .weather-copy,
+  .weather-advice,
   .popular-foods {
     display: none;
   }
