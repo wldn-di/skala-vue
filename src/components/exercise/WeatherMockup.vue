@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 import WeatherMenuRecommend from './WeatherMenuRecommend.vue'
 import WeatherMockCard from './WeatherMockCard.vue'
@@ -15,6 +15,21 @@ const selectedDistrict = ref('')
 const selectedCityInfo = ref('지도를 누르거나 날씨 카드를 선택해 보세요.')
 const activeView = ref('weather')
 const activePanel = ref('weather')
+
+// 과제 2 핵심: 상태바 문구가 바뀔 때마다 변경 내용을 감시합니다.
+watch(selectedCityInfo, (newInfo) => {
+  console.log(`[watch] 상태바 문구 변경: ${newInfo}`)
+})
+
+// 과제 2 핵심: 한글 도시 검색어가 바뀔 때마다 자동으로 다시 실행됩니다.
+watchEffect(() => {
+  console.log(`[watchEffect] 현재 도시 검색어: ${searchQuery.value}`)
+})
+
+// 본인만의 추가 Watcher: 맛집 등록 대상 구·군의 변화를 추적합니다.
+watch(selectedDistrict, (newDistrict) => {
+  console.log(`[추가 watch] 선택된 구·군: ${newDistrict || '없음'}`)
+})
 
 const RESTAURANT_STORAGE_KEY = 'weather-bite-restaurants-v1'
 
