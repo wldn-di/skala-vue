@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 
 import WeatherMenuRecommend from './WeatherMenuRecommend.vue'
 import WeatherMockCard from './WeatherMockCard.vue'
@@ -19,6 +19,11 @@ const selectedCityInfo = ref('지도를 누르거나 날씨 카드를 선택해 
 const activeView = ref('weather')
 const activePanel = ref('weather')
 const pendingGameResult = ref(null)
+// 과제 2 본인만의 반응형 상태: 실시간 API 동기화 상태와 마지막 갱신 시각입니다.
+const weatherApiStatus = ref('idle')
+const weatherApiMessage = ref('실시간 날씨를 불러올 준비 중입니다.')
+const weatherUpdatedAt = ref(null)
+let weatherRequestController = null
 
 // 과제 2 핵심: 상태바 문구가 바뀔 때마다 변경 내용을 감시합니다.
 watch(selectedCityInfo, (newInfo) => {
@@ -33,6 +38,11 @@ watchEffect(() => {
 // 본인만의 추가 Watcher: 맛집 등록 대상 구·군의 변화를 추적합니다.
 watch(selectedDistrict, (newDistrict) => {
   console.log(`[추가 watch] 선택된 구·군: ${newDistrict || '없음'}`)
+})
+
+// 과제 2 본인만의 Watcher: 실시간 날씨 API 상태 변화를 감시합니다.
+watch(weatherApiStatus, (newStatus, oldStatus) => {
+  console.log(`[추가 watch] 날씨 API 상태: ${oldStatus} → ${newStatus}`)
 })
 
 const RESTAURANT_STORAGE_KEY = 'weather-bite-restaurants-v1'
@@ -66,6 +76,16 @@ const selectedWeather = computed(() => weatherList.value.find((weather) => weath
 
 const recommendWeather = computed(() => selectedWeather.value ?? weatherList.value[0])
 const bestGameScore = computed(() => Math.max(0, ...gameScores.value.map((item) => item.score)))
+// 과제 2 본인만의 Computed: API 연동에 성공한 지역 수를 자동 집계합니다.
+const liveWeatherCount = computed(() => weatherList.value.filter((item) => item.dataSource === 'live').length)
+const isWeatherLoading = computed(() => weatherApiStatus.value === 'loading')
+const weatherApiStatusLabel = computed(() => {
+  if (weatherApiStatus.value === 'loading') return '실시간 날씨 불러오는 중'
+  if (weatherApiStatus.value === 'success') return `LIVE · ${liveWeatherCount.value}/17 지역`
+  if (weatherApiStatus.value === 'partial') return `일부 LIVE · ${liveWeatherCount.value}/17 지역`
+  if (weatherApiStatus.value === 'error') return 'Mock 데이터로 표시 중'
+  return '날씨 API 연결 대기'
+})
 const isDrilled = computed(() => Boolean(selectedWeather.value))
 const mapFile = computed(() => (selectedWeather.value ? `${selectedWeather.value.mapName}_시군구_경계.svg` : '전국_시도_경계.svg'))
 const mapRegions = computed(() => (isDrilled.value ? [] : weatherList.value))
@@ -139,7 +159,61 @@ const returnToNational = () => {
 
 // 과제 1 핵심: 상세보기 버튼에서 호출되는 alert 함수입니다.
 const showDetail = (weather) => {
-  window.alert(`${weather.name}의 현재 날씨는 [${weather.status}] 상태이며, 기온은 ${weather.temp}°C입니다.`)
+  const sourceText = weather.dataSource === 'live' ? 'OpenWeather 실시간 관측' : '과제용 Mock'
+  window.alert(`${weather.name}의 현재 날씨는 [${weather.status}] 상태이며, 기온은 ${weather.temp}°C입니다.\n데이터: ${sourceText}`)
+}
+
+const syncLiveWeather = async () => {
+  if (isWeatherLoading.value) return
+
+  weatherRequestController?.abort()
+  weatherRequestController = new AbortController()
+  weatherApiStatus.value = 'loading'
+  weatherApiMessage.value = '전국 17개 시·도의 현재 날씨를 안전하게 불러오고 있습니다.'
+
+  try {
+    const response = await fetch('/api/weather', {
+      headers: { Accept: 'application/json' },
+      signal: weatherRequestController.signal,
+    })
+    const payload = await response.json()
+    if (!response.ok) {
+      const requestError = new Error('Weather proxy request failed')
+      requestError.code = payload.error
+      throw requestError
+    }
+    if (!Array.isArray(payload.data)) throw new Error('Weather response is invalid')
+
+    const weatherByRegion = new Map(payload.data.map((item) => [item.id, item]))
+    weatherList.value = weatherList.value.map((weather) => {
+      const liveWeather = weatherByRegion.get(weather.id)
+      if (!liveWeather || !Number.isFinite(liveWeather.temp)) return weather
+
+      return {
+        ...weather,
+        ...liveWeather,
+        dataSource: 'live',
+      }
+    })
+
+    weatherUpdatedAt.value = payload.fetchedAt ?? new Date().toISOString()
+    const failedCount = Array.isArray(payload.failedRegionIds) ? payload.failedRegionIds.length : 0
+    weatherApiStatus.value = failedCount ? 'partial' : 'success'
+    weatherApiMessage.value = failedCount ? `${failedCount}개 지역은 기존 데이터로 유지하고 나머지 지역은 실시간 날씨로 갱신했습니다.` : '전국 17개 시·도의 실시간 날씨를 갱신했습니다.'
+  } catch (error) {
+    if (error.name === 'AbortError') return
+    weatherApiStatus.value = 'error'
+    weatherApiMessage.value =
+      error.code === 'WEATHER_API_UNAUTHORIZED' ? 'OpenWeather 키가 아직 활성화되지 않았습니다. 활성화 후 새로고침해 주세요.' : '실시간 날씨를 불러오지 못해 안전하게 Mock 데이터를 유지합니다.'
+  }
+}
+
+const formatWeatherUpdateTime = (date) => {
+  if (!date) return '갱신 전'
+  return new Intl.DateTimeFormat('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(date))
 }
 
 const handleGameFinished = (result) => {
@@ -191,6 +265,9 @@ const removeRestaurant = (restaurantId) => {
   restaurants.value = restaurants.value.filter((restaurant) => restaurant.id !== restaurantId)
   saveRestaurants()
 }
+
+onMounted(syncLiveWeather)
+onBeforeUnmount(() => weatherRequestController?.abort())
 </script>
 
 <template>
@@ -244,7 +321,12 @@ const removeRestaurant = (restaurantId) => {
               <h1 v-else>지도에서 오늘의 날씨를 만나보세요</h1>
             </div>
             <span v-if="isDrilled" class="mock-badge restaurant-total"> 📍 등록 맛집 {{ restaurantCounts[selectedRegionId] ?? 0 }}곳 </span>
-            <span v-else class="mock-badge"><i></i> 과제용 MOCK · 12:00</span>
+            <div v-else class="weather-sync-actions">
+              <span class="mock-badge" :class="`api-${weatherApiStatus}`" :title="weatherApiMessage"> <i></i>{{ weatherApiStatusLabel }} </span>
+              <button type="button" :disabled="isWeatherLoading" @click="syncLiveWeather">
+                {{ isWeatherLoading ? '동기화 중' : '↻ 새로고침' }}
+              </button>
+            </div>
           </header>
 
           <div class="map-stage">
@@ -288,7 +370,10 @@ const removeRestaurant = (restaurantId) => {
             <div v-if="activePanel === 'weather'" class="weather-detail">
               <div class="temperature-hero">
                 <div class="temperature-content">
-                  <small>현재 기온 · 과제용 Mock 12:00</small>
+                  <small>
+                    현재 기온 ·
+                    {{ selectedWeather.dataSource === 'live' ? `OpenWeather 관측 ${formatWeatherUpdateTime(selectedWeather.observedAt)}` : '과제용 Mock' }}
+                  </small>
                   <div class="temperature-line">
                     <strong>{{ selectedWeather.temp }}<sup>°C</sup></strong>
                     <p>{{ selectedWeather.status }}</p>
@@ -303,13 +388,13 @@ const removeRestaurant = (restaurantId) => {
                 <span aria-hidden="true">💡</span>
                 <p>
                   <small>TODAY'S TIP</small>
-                  <strong> {{ selectedWeather.name }}은 현재 {{ selectedWeather.status }} 상태예요. 오늘 기온에 어울리는 메뉴도 함께 골라보세요. </strong>
+                  <strong> {{ selectedWeather.name }}은 현재 {{ selectedWeather.description || selectedWeather.status }} 상태예요. 오늘 기온에 어울리는 메뉴도 함께 골라보세요. </strong>
                 </p>
               </div>
 
               <dl class="weather-metrics">
                 <div>
-                  <dt>최고 / 최저</dt>
+                  <dt>{{ selectedWeather.dataSource === 'live' ? '관측 최고 / 최저' : '최고 / 최저' }}</dt>
                   <dd>{{ selectedWeather.high }}° / {{ selectedWeather.low }}°</dd>
                 </div>
                 <div>
@@ -317,8 +402,8 @@ const removeRestaurant = (restaurantId) => {
                   <dd>{{ selectedWeather.humidity }}%</dd>
                 </div>
                 <div>
-                  <dt>강수확률</dt>
-                  <dd>{{ selectedWeather.rainChance }}%</dd>
+                  <dt>{{ selectedWeather.dataSource === 'live' ? '1시간 강수량' : '강수확률' }}</dt>
+                  <dd>{{ selectedWeather.dataSource === 'live' ? `${selectedWeather.rainLastHour}mm` : `${selectedWeather.rainChance}%` }}</dd>
                 </div>
                 <div>
                   <dt>바람</dt>
@@ -373,6 +458,10 @@ const removeRestaurant = (restaurantId) => {
             <div>
               <p>NATIONWIDE</p>
               <h2 id="weather-list-title">전국 날씨 한눈에 보기</h2>
+              <div class="api-state" :class="`api-${weatherApiStatus}`" role="status" :title="weatherApiMessage">
+                <i></i>
+                {{ weatherApiStatusLabel }} · {{ formatWeatherUpdateTime(weatherUpdatedAt) }}
+              </div>
             </div>
           </div>
 
@@ -386,6 +475,7 @@ const removeRestaurant = (restaurantId) => {
             <p>
               검색 중인 도시: <strong>{{ searchQuery || '전체' }}</strong>
             </p>
+            <button class="weather-refresh-button" type="button" :disabled="isWeatherLoading" @click="syncLiveWeather" aria-label="전국 실시간 날씨 새로고침">↻</button>
           </div>
         </header>
 
@@ -707,6 +797,84 @@ const removeRestaurant = (restaurantId) => {
 .mock-badge.restaurant-total {
   color: #b6571c;
   background: #fff3eb;
+}
+
+.weather-sync-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weather-sync-actions > button,
+.weather-refresh-button {
+  min-height: 30px;
+  padding: 0 9px;
+  color: #536274;
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: #fff;
+  border: 1px solid #dfe7ef;
+  border-radius: 9px;
+}
+
+.weather-sync-actions > button:hover,
+.weather-refresh-button:hover {
+  color: #1b64da;
+  border-color: #a9c9f5;
+}
+
+.weather-sync-actions > button:disabled,
+.weather-refresh-button:disabled {
+  color: #a1a9b3;
+  background: #f7f8fa;
+}
+
+.mock-badge.api-error i,
+.mock-badge.api-partial i,
+.api-state.api-error i,
+.api-state.api-partial i {
+  background: #ff8a3d;
+  box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.12);
+}
+
+.mock-badge.api-loading i,
+.api-state.api-loading i {
+  background: #3182f6;
+  box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12);
+  animation: api-pulse 900ms ease-in-out infinite alternate;
+}
+
+.api-state {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  color: #657486;
+  font-size: 0.52rem;
+  font-weight: 750;
+}
+
+.api-state i {
+  width: 6px;
+  height: 6px;
+  background: #20c997;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.12);
+}
+
+.weather-refresh-button {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+@keyframes api-pulse {
+  to {
+    opacity: 0.35;
+    transform: scale(0.78);
+  }
 }
 
 .map-stage {

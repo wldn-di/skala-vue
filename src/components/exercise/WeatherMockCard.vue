@@ -38,7 +38,7 @@ const emit = defineEmits(['select', 'detail'])
     <template v-if="size === 'large'">
       <header class="large-card-heading">
         <div>
-          <small>REGION WEATHER</small>
+          <small>REGION WEATHER · {{ weather.dataSource === 'live' ? 'LIVE' : 'MOCK' }}</small>
           <strong>{{ weather.fullName }}</strong>
         </div>
         <span class="large-weather-icon" aria-hidden="true">{{ weather.emoji }}</span>
@@ -48,24 +48,16 @@ const emit = defineEmits(['select', 'detail'])
         <b>{{ weather.temp }}<sup>°</sup></b>
         <div>
           <strong>{{ weather.status }}</strong>
-          <small>최고 {{ weather.high }}° · 최저 {{ weather.low }}°</small>
+          <small v-if="weather.dataSource === 'live'">관측 범위 {{ weather.low }}° ~ {{ weather.high }}°</small>
+          <small v-else>최고 {{ weather.high }}° · 최저 {{ weather.low }}°</small>
         </div>
       </div>
 
       <footer class="large-card-footer">
-        <span v-if="weather.temp >= 25" class="temperature-label hot">
-          🔥 더움 (25도 이상)
-        </span>
+        <span v-if="weather.temp >= 25" class="temperature-label hot"> 🔥 더움 (25도 이상) </span>
         <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
 
-        <button
-          class="detail-button"
-          type="button"
-          :aria-label="`${weather.name} 날씨 상세보기`"
-          @click.stop="emit('detail', weather)"
-        >
-          상세보기 <i aria-hidden="true">→</i>
-        </button>
+        <button class="detail-button" type="button" :aria-label="`${weather.name} 날씨 상세보기`" @click.stop="emit('detail', weather)">상세보기 <i aria-hidden="true">→</i></button>
       </footer>
     </template>
 
@@ -79,19 +71,10 @@ const emit = defineEmits(['select', 'detail'])
         <small>{{ weather.status }}</small>
       </div>
 
-      <span v-if="weather.temp >= 25" class="temperature-label hot">
-        🔥 더움 (25도 이상)
-      </span>
+      <span v-if="weather.temp >= 25" class="temperature-label hot"> 🔥 더움 (25도 이상) </span>
       <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
 
-      <button
-        class="detail-button"
-        type="button"
-        :aria-label="`${weather.name} 날씨 상세보기`"
-        @click.stop="emit('detail', weather)"
-      >
-        상세보기
-      </button>
+      <button class="detail-button" type="button" :aria-label="`${weather.name} 날씨 상세보기`" @click.stop="emit('detail', weather)">상세보기</button>
     </template>
   </article>
 </template>
@@ -105,7 +88,10 @@ const emit = defineEmits(['select', 'detail'])
   border: 1px solid #e6ebf1;
   border-radius: 13px;
   cursor: pointer;
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 .weather-mini-card:hover,
