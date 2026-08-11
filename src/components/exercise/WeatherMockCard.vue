@@ -64,7 +64,7 @@ const emit = defineEmits(['select', 'detail'])
           :aria-label="`${weather.name} 날씨 상세보기`"
           @click.stop="emit('detail', weather)"
         >
-          상세 <i aria-hidden="true">→</i>
+          상세보기 <i aria-hidden="true">→</i>
         </button>
       </footer>
     </template>
