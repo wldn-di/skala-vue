@@ -5,6 +5,9 @@ import WeatherMenuRecommend from './WeatherMenuRecommend.vue'
 import WeatherMockCard from './WeatherMockCard.vue'
 import WeatherRegionMap from './WeatherRegionMap.vue'
 import WeatherRestaurantPanel from './WeatherRestaurantPanel.vue'
+import GameScorePage from './game/GameScorePage.vue'
+import GameScoreRegister from './game/GameScoreRegister.vue'
+import WeatherGamePage from './game/WeatherGamePage.vue'
 import { weatherList as weatherMockList } from './weatherMockData'
 
 // 과제 1 핵심: 임의의 날씨 데이터 배열을 ref로 관리합니다.
@@ -15,6 +18,7 @@ const selectedDistrict = ref('')
 const selectedCityInfo = ref('지도를 누르거나 날씨 카드를 선택해 보세요.')
 const activeView = ref('weather')
 const activePanel = ref('weather')
+const pendingGameResult = ref(null)
 
 // 과제 2 핵심: 상태바 문구가 바뀔 때마다 변경 내용을 감시합니다.
 watch(selectedCityInfo, (newInfo) => {
@@ -32,6 +36,7 @@ watch(selectedDistrict, (newDistrict) => {
 })
 
 const RESTAURANT_STORAGE_KEY = 'weather-bite-restaurants-v1'
+const GAME_SCORE_STORAGE_KEY = 'weather-bite-snake-scores-v1'
 
 const loadRestaurants = () => {
   try {
@@ -45,38 +50,35 @@ const loadRestaurants = () => {
 
 const restaurants = ref(loadRestaurants())
 
-const selectedWeather = computed(
-  () => weatherList.value.find((weather) => weather.id === selectedRegionId.value) ?? null,
-)
+const loadGameScores = () => {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(GAME_SCORE_STORAGE_KEY) ?? '[]')
+    return Array.isArray(saved) ? saved : []
+  } catch {
+    window.localStorage.removeItem(GAME_SCORE_STORAGE_KEY)
+    return []
+  }
+}
+
+const gameScores = ref(loadGameScores())
+
+const selectedWeather = computed(() => weatherList.value.find((weather) => weather.id === selectedRegionId.value) ?? null)
 
 const recommendWeather = computed(() => selectedWeather.value ?? weatherList.value[0])
+const bestGameScore = computed(() => Math.max(0, ...gameScores.value.map((item) => item.score)))
 const isDrilled = computed(() => Boolean(selectedWeather.value))
-const mapFile = computed(() =>
-  selectedWeather.value
-    ? `${selectedWeather.value.mapName}_시군구_경계.svg`
-    : '전국_시도_경계.svg',
-)
+const mapFile = computed(() => (selectedWeather.value ? `${selectedWeather.value.mapName}_시군구_경계.svg` : '전국_시도_경계.svg'))
 const mapRegions = computed(() => (isDrilled.value ? [] : weatherList.value))
-const mapActiveName = computed(() =>
-  isDrilled.value ? selectedDistrict.value : selectedWeather.value?.mapName ?? '',
-)
+const mapActiveName = computed(() => (isDrilled.value ? selectedDistrict.value : (selectedWeather.value?.mapName ?? '')))
 
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim().toLocaleLowerCase('ko-KR')
   if (!query) return weatherList.value
 
-  return weatherList.value.filter((weather) =>
-    `${weather.name} ${weather.fullName}`.toLocaleLowerCase('ko-KR').includes(query),
-  )
+  return weatherList.value.filter((weather) => `${weather.name} ${weather.fullName}`.toLocaleLowerCase('ko-KR').includes(query))
 })
 
-const selectedRestaurants = computed(() =>
-  restaurants.value.filter(
-    (restaurant) =>
-      restaurant.regionId === selectedRegionId.value &&
-      restaurant.districtName === selectedDistrict.value,
-  ),
-)
+const selectedRestaurants = computed(() => restaurants.value.filter((restaurant) => restaurant.regionId === selectedRegionId.value && restaurant.districtName === selectedDistrict.value))
 
 const restaurantCounts = computed(() =>
   restaurants.value.reduce((counts, restaurant) => {
@@ -94,9 +96,7 @@ const districtRestaurantCounts = computed(() =>
   }, {}),
 )
 
-const mapRestaurantCounts = computed(() =>
-  isDrilled.value ? districtRestaurantCounts.value : restaurantCounts.value,
-)
+const mapRestaurantCounts = computed(() => (isDrilled.value ? districtRestaurantCounts.value : restaurantCounts.value))
 
 const saveRestaurants = () => {
   window.localStorage.setItem(RESTAURANT_STORAGE_KEY, JSON.stringify(restaurants.value))
@@ -105,6 +105,11 @@ const saveRestaurants = () => {
 const makeRestaurantId = () => {
   if (typeof window.crypto?.randomUUID === 'function') return window.crypto.randomUUID()
   return `restaurant_${Date.now()}_${Math.random().toString(16).slice(2)}`
+}
+
+const makeGameScoreId = () => {
+  if (typeof window.crypto?.randomUUID === 'function') return window.crypto.randomUUID()
+  return `game_score_${Date.now()}_${Math.random().toString(16).slice(2)}`
 }
 
 const selectWeather = (weather) => {
@@ -134,9 +139,37 @@ const returnToNational = () => {
 
 // 과제 1 핵심: 상세보기 버튼에서 호출되는 alert 함수입니다.
 const showDetail = (weather) => {
-  window.alert(
-    `${weather.name}의 현재 날씨는 [${weather.status}] 상태이며, 기온은 ${weather.temp}°C입니다.`,
-  )
+  window.alert(`${weather.name}의 현재 날씨는 [${weather.status}] 상태이며, 기온은 ${weather.temp}°C입니다.`)
+}
+
+const handleGameFinished = (result) => {
+  pendingGameResult.value = {
+    ...result,
+    playedRegionId: recommendWeather.value.id,
+    playedRegion: recommendWeather.value.fullName,
+    region: recommendWeather.value.fullName,
+    weatherEmoji: recommendWeather.value.emoji,
+    weatherStatus: recommendWeather.value.status,
+  }
+}
+
+const registerGameScore = ({ homeRegionId, nickname }) => {
+  if (!pendingGameResult.value) return
+
+  const homeRegion = weatherList.value.find((item) => item.id === homeRegionId)
+  if (!homeRegion) return
+
+  gameScores.value.unshift({
+    id: makeGameScoreId(),
+    ...pendingGameResult.value,
+    homeRegionId: homeRegion.id,
+    homeRegion: homeRegion.fullName,
+    nickname,
+    registeredAt: new Date().toISOString(),
+  })
+  window.localStorage.setItem(GAME_SCORE_STORAGE_KEY, JSON.stringify(gameScores.value))
+  pendingGameResult.value = null
+  activeView.value = 'myScore'
 }
 
 const addRestaurant = ({ name, signatureMenu, note }) => {
@@ -155,9 +188,7 @@ const addRestaurant = ({ name, signatureMenu, note }) => {
 }
 
 const removeRestaurant = (restaurantId) => {
-  restaurants.value = restaurants.value.filter(
-    (restaurant) => restaurant.id !== restaurantId,
-  )
+  restaurants.value = restaurants.value.filter((restaurant) => restaurant.id !== restaurantId)
   saveRestaurants()
 }
 </script>
@@ -174,27 +205,17 @@ const removeRestaurant = (restaurantId) => {
       </button>
 
       <nav aria-label="주요 메뉴">
-        <button
-          type="button"
-          :class="{ active: activeView === 'weather' }"
-          @click="activeView = 'weather'"
-        >
-          날씨지도
-        </button>
-        <button
-          type="button"
-          :class="{ active: activeView === 'nationwide' }"
-          @click="activeView = 'nationwide'"
-        >
-          전국날씨
-        </button>
-        <button
-          type="button"
-          :class="{ active: activeView === 'menu' }"
-          @click="activeView = 'menu'"
-        >
+        <button type="button" :class="{ active: activeView === 'weather' }" @click="activeView = 'weather'">날씨지도</button>
+        <button type="button" :class="{ active: activeView === 'nationwide' }" @click="activeView = 'nationwide'">전국날씨</button>
+        <button type="button" :class="{ active: activeView === 'menu' }" @click="activeView = 'menu'">
           저메추
           <span>100</span>
+        </button>
+        <button type="button" :class="{ active: activeView === 'game' }" @click="activeView = 'game'">게임</button>
+        <button type="button" :class="{ active: activeView === 'myScore' }" @click="activeView = 'myScore'">내점수</button>
+        <button type="button" :class="{ active: activeView === 'scoreRegister' }" @click="activeView = 'scoreRegister'">
+          점수등록
+          <span v-if="pendingGameResult">1</span>
         </button>
       </nav>
 
@@ -202,9 +223,7 @@ const removeRestaurant = (restaurantId) => {
         <span>{{ selectedWeather ? selectedWeather.emoji : '🗺️' }}</span>
         <div>
           <small>{{ selectedWeather ? selectedWeather.name : '지역 선택' }}</small>
-          <strong v-if="selectedWeather">
-            {{ selectedWeather.temp }}° {{ selectedWeather.status }}
-          </strong>
+          <strong v-if="selectedWeather"> {{ selectedWeather.temp }}° {{ selectedWeather.status }} </strong>
           <strong v-else>전국 지도</strong>
         </div>
       </div>
@@ -224,41 +243,19 @@ const removeRestaurant = (restaurantId) => {
               <h1 v-if="isDrilled">{{ selectedWeather.name }} 구·군별 맛집지도</h1>
               <h1 v-else>지도에서 오늘의 날씨를 만나보세요</h1>
             </div>
-            <span v-if="isDrilled" class="mock-badge restaurant-total">
-              📍 등록 맛집 {{ restaurantCounts[selectedRegionId] ?? 0 }}곳
-            </span>
+            <span v-if="isDrilled" class="mock-badge restaurant-total"> 📍 등록 맛집 {{ restaurantCounts[selectedRegionId] ?? 0 }}곳 </span>
             <span v-else class="mock-badge"><i></i> 과제용 MOCK · 12:00</span>
           </header>
 
           <div class="map-stage">
-            <WeatherRegionMap
-              :file="mapFile"
-              :active-name="mapActiveName"
-              :regions="mapRegions"
-              :restaurant-counts="mapRestaurantCounts"
-              :drilled="isDrilled"
-              @select="selectFromMap"
-            />
-            <button
-              v-if="isDrilled"
-              class="map-back-button"
-              type="button"
-              @click="returnToNational"
-            >
-              ← 전국 지도로
-            </button>
+            <WeatherRegionMap :file="mapFile" :active-name="mapActiveName" :regions="mapRegions" :restaurant-counts="mapRestaurantCounts" :drilled="isDrilled" @select="selectFromMap" />
+            <button v-if="isDrilled" class="map-back-button" type="button" @click="returnToNational">← 전국 지도로</button>
           </div>
 
           <footer class="map-footer">
-            <span v-if="isDrilled">
-              <b>TIP</b> 구·군을 선택하면 해당 동네 맛집을 등록할 수 있어요.
-            </span>
-            <span v-else>
-              <b>TIP</b> 숫자는 시·도별 등록 맛집 합계예요. 지역을 눌러 자세히 보세요.
-            </span>
-            <a href="https://github.com/statgarten/maps" target="_blank" rel="noreferrer">
-              지도: SGIS 기반 statgarten/maps
-            </a>
+            <span v-if="isDrilled"> <b>TIP</b> 구·군을 선택하면 해당 동네 맛집을 등록할 수 있어요. </span>
+            <span v-else> <b>TIP</b> 숫자는 시·도별 등록 맛집 합계예요. 지역을 눌러 자세히 보세요. </span>
+            <a href="https://github.com/statgarten/maps" target="_blank" rel="noreferrer"> 지도: SGIS 기반 statgarten/maps </a>
           </footer>
         </article>
 
@@ -267,136 +264,109 @@ const removeRestaurant = (restaurantId) => {
             <span aria-hidden="true">🗺️</span>
             <small>REGION SELECT</small>
             <strong>아직 선택된 지역이 없어요</strong>
-            <p>
-              전국 지도에서 궁금한 시·도를 선택하면<br />날씨와 구·군별 맛집지도를 보여드려요.
-            </p>
-            <div>
-              <b>1</b> 시·도 선택 <i>→</i> <b>2</b> 구·군 선택 <i>→</i> <b>3</b> 맛집 등록
-            </div>
+            <p>전국 지도에서 궁금한 시·도를 선택하면<br />날씨와 구·군별 맛집지도를 보여드려요.</p>
+            <div><b>1</b> 시·도 선택 <i>→</i> <b>2</b> 구·군 선택 <i>→</i> <b>3</b> 맛집 등록</div>
           </div>
 
           <template v-else>
-          <header class="detail-heading">
-            <div>
-              <p>선택 지역</p>
-              <h2>{{ selectedWeather.fullName }}</h2>
+            <header class="detail-heading">
+              <div>
+                <p>선택 지역</p>
+                <h2>{{ selectedWeather.fullName }}</h2>
+              </div>
+              <span class="detail-weather-icon" aria-hidden="true">{{ selectedWeather.emoji }}</span>
+            </header>
+
+            <div class="panel-tabs" role="tablist" aria-label="지역 정보 선택">
+              <button type="button" role="tab" :aria-selected="activePanel === 'weather'" :class="{ active: activePanel === 'weather' }" @click="activePanel = 'weather'">오늘 날씨</button>
+              <button type="button" role="tab" :aria-selected="activePanel === 'restaurants'" :class="{ active: activePanel === 'restaurants' }" @click="activePanel = 'restaurants'">
+                맛집지도
+                <span>{{ restaurantCounts[selectedRegionId] ?? 0 }}</span>
+              </button>
             </div>
-            <span class="detail-weather-icon" aria-hidden="true">{{ selectedWeather.emoji }}</span>
-          </header>
 
-          <div class="panel-tabs" role="tablist" aria-label="지역 정보 선택">
-            <button
-              type="button"
-              role="tab"
-              :aria-selected="activePanel === 'weather'"
-              :class="{ active: activePanel === 'weather' }"
-              @click="activePanel = 'weather'"
-            >
-              오늘 날씨
-            </button>
-            <button
-              type="button"
-              role="tab"
-              :aria-selected="activePanel === 'restaurants'"
-              :class="{ active: activePanel === 'restaurants' }"
-              @click="activePanel = 'restaurants'"
-            >
-              맛집지도
-              <span>{{ restaurantCounts[selectedRegionId] ?? 0 }}</span>
-            </button>
-          </div>
-
-          <div v-if="activePanel === 'weather'" class="weather-detail">
-            <div class="temperature-hero">
-              <div class="temperature-content">
-                <small>현재 기온 · 과제용 Mock 12:00</small>
-                <div class="temperature-line">
-                  <strong>{{ selectedWeather.temp }}<sup>°C</sup></strong>
-                  <p>{{ selectedWeather.status }}</p>
+            <div v-if="activePanel === 'weather'" class="weather-detail">
+              <div class="temperature-hero">
+                <div class="temperature-content">
+                  <small>현재 기온 · 과제용 Mock 12:00</small>
+                  <div class="temperature-line">
+                    <strong>{{ selectedWeather.temp }}<sup>°C</sup></strong>
+                    <p>{{ selectedWeather.status }}</p>
+                  </div>
+                  <span v-if="selectedWeather.temp >= 25" class="large-label hot"> 🔥 더움 (25도 이상) </span>
+                  <span v-else class="large-label cool">❄️ 선선함 (25도 미만)</span>
                 </div>
-                <span v-if="selectedWeather.temp >= 25" class="large-label hot">
-                  🔥 더움 (25도 이상)
-                </span>
-                <span v-else class="large-label cool">❄️ 선선함 (25도 미만)</span>
+                <span class="weather-hero-icon" aria-hidden="true">{{ selectedWeather.emoji }}</span>
               </div>
-              <span class="weather-hero-icon" aria-hidden="true">{{ selectedWeather.emoji }}</span>
+
+              <div class="weather-advice">
+                <span aria-hidden="true">💡</span>
+                <p>
+                  <small>TODAY'S TIP</small>
+                  <strong> {{ selectedWeather.name }}은 현재 {{ selectedWeather.status }} 상태예요. 오늘 기온에 어울리는 메뉴도 함께 골라보세요. </strong>
+                </p>
+              </div>
+
+              <dl class="weather-metrics">
+                <div>
+                  <dt>최고 / 최저</dt>
+                  <dd>{{ selectedWeather.high }}° / {{ selectedWeather.low }}°</dd>
+                </div>
+                <div>
+                  <dt>습도</dt>
+                  <dd>{{ selectedWeather.humidity }}%</dd>
+                </div>
+                <div>
+                  <dt>강수확률</dt>
+                  <dd>{{ selectedWeather.rainChance }}%</dd>
+                </div>
+                <div>
+                  <dt>바람</dt>
+                  <dd>{{ selectedWeather.wind }}m/s</dd>
+                </div>
+              </dl>
+
+              <div class="popular-foods">
+                <div>
+                  <p>LOCAL PICKS</p>
+                  <strong>{{ selectedWeather.name }} 대표 음식</strong>
+                </div>
+                <span v-for="food in selectedWeather.popularFoods" :key="food">{{ food }}</span>
+              </div>
+
+              <button class="menu-recommend-link" type="button" @click="activeView = 'menu'">
+                <span aria-hidden="true">🎲</span>
+                <div>
+                  <small>오늘 뭐 먹지?</small>
+                  <strong>이 날씨에 맞는 메뉴 랜덤 추천</strong>
+                </div>
+                <b aria-hidden="true">→</b>
+              </button>
             </div>
 
-            <div class="weather-advice">
-              <span aria-hidden="true">💡</span>
-              <p>
-                <small>TODAY'S TIP</small>
-                <strong>
-                  {{ selectedWeather.name }}은 현재 {{ selectedWeather.status }} 상태예요.
-                  오늘 기온에 어울리는 메뉴도 함께 골라보세요.
-                </strong>
-              </p>
-            </div>
-
-            <dl class="weather-metrics">
-              <div>
-                <dt>최고 / 최저</dt>
-                <dd>{{ selectedWeather.high }}° / {{ selectedWeather.low }}°</dd>
+            <template v-else>
+              <WeatherRestaurantPanel
+                v-if="selectedDistrict"
+                :region="selectedWeather"
+                :district-name="selectedDistrict"
+                :restaurants="selectedRestaurants"
+                @add-restaurant="addRestaurant"
+                @remove-restaurant="removeRestaurant"
+              />
+              <div v-else class="district-empty">
+                <span aria-hidden="true">📍</span>
+                <small>DISTRICT SELECT</small>
+                <strong>{{ selectedWeather.name }}의 구·군을 선택해 주세요</strong>
+                <p>왼쪽 세부 지도에서 맛집을 등록할 동네를 먼저 눌러주세요.</p>
               </div>
-              <div>
-                <dt>습도</dt>
-                <dd>{{ selectedWeather.humidity }}%</dd>
-              </div>
-              <div>
-                <dt>강수확률</dt>
-                <dd>{{ selectedWeather.rainChance }}%</dd>
-              </div>
-              <div>
-                <dt>바람</dt>
-                <dd>{{ selectedWeather.wind }}m/s</dd>
-              </div>
-            </dl>
-
-            <div class="popular-foods">
-              <div>
-                <p>LOCAL PICKS</p>
-                <strong>{{ selectedWeather.name }} 대표 음식</strong>
-              </div>
-              <span v-for="food in selectedWeather.popularFoods" :key="food">{{ food }}</span>
-            </div>
-
-            <button class="menu-recommend-link" type="button" @click="activeView = 'menu'">
-              <span aria-hidden="true">🎲</span>
-              <div>
-                <small>오늘 뭐 먹지?</small>
-                <strong>이 날씨에 맞는 메뉴 랜덤 추천</strong>
-              </div>
-              <b aria-hidden="true">→</b>
-            </button>
-          </div>
-
-          <template v-else>
-            <WeatherRestaurantPanel
-              v-if="selectedDistrict"
-              :region="selectedWeather"
-              :district-name="selectedDistrict"
-              :restaurants="selectedRestaurants"
-              @add-restaurant="addRestaurant"
-              @remove-restaurant="removeRestaurant"
-            />
-            <div v-else class="district-empty">
-              <span aria-hidden="true">📍</span>
-              <small>DISTRICT SELECT</small>
-              <strong>{{ selectedWeather.name }}의 구·군을 선택해 주세요</strong>
-              <p>왼쪽 세부 지도에서 맛집을 등록할 동네를 먼저 눌러주세요.</p>
-            </div>
-          </template>
+            </template>
           </template>
         </aside>
       </section>
-
     </main>
 
     <section v-else-if="activeView === 'nationwide'" class="nationwide-page">
-      <section
-        class="weather-list-card nationwide-card"
-        aria-labelledby="weather-list-title"
-      >
+      <section class="weather-list-card nationwide-card" aria-labelledby="weather-list-title">
         <header class="weather-list-heading">
           <div class="list-title">
             <span aria-hidden="true">🌦️</span>
@@ -411,13 +381,7 @@ const removeRestaurant = (restaurantId) => {
             <div class="search-input">
               <span aria-hidden="true">⌕</span>
               <!-- 과제 1 핵심: v-model 대신 :value와 @input으로 한글 입력을 처리합니다. -->
-              <input
-                id="city-search"
-                type="search"
-                :value="searchQuery"
-                placeholder="한글 도시명 검색"
-                @input="searchQuery = $event.target.value"
-              />
+              <input id="city-search" type="search" :value="searchQuery" placeholder="한글 도시명 검색" @input="searchQuery = $event.target.value" />
             </div>
             <p>
               검색 중인 도시: <strong>{{ searchQuery || '전체' }}</strong>
@@ -429,23 +393,26 @@ const removeRestaurant = (restaurantId) => {
 
         <div v-if="filteredWeatherList.length" class="weather-card-grid">
           <!-- 과제 1 핵심: v-for와 :key="item.id"로 날씨 카드를 반복 렌더링합니다. -->
-          <WeatherMockCard
-            v-for="item in filteredWeatherList"
-            :key="item.id"
-            :weather="item"
-            :selected="item.id === selectedRegionId"
-            size="large"
-            @select="selectWeather"
-            @detail="showDetail"
-          />
+          <WeatherMockCard v-for="item in filteredWeatherList" :key="item.id" :weather="item" :selected="item.id === selectedRegionId" size="large" @select="selectWeather" @detail="showDetail" />
         </div>
-        <div v-else class="no-search-result" role="status">
-          ‘{{ searchQuery }}’와 일치하는 도시가 없어요.
-        </div>
+        <div v-else class="no-search-result" role="status">‘{{ searchQuery }}’와 일치하는 도시가 없어요.</div>
       </section>
     </section>
 
-    <WeatherMenuRecommend v-else :weather="recommendWeather" />
+    <WeatherMenuRecommend v-else-if="activeView === 'menu'" :weather="recommendWeather" />
+
+    <WeatherGamePage
+      v-else-if="activeView === 'game'"
+      :weather="recommendWeather"
+      :best-score="bestGameScore"
+      :last-result="pendingGameResult"
+      @finish="handleGameFinished"
+      @go-register="activeView = 'scoreRegister'"
+    />
+
+    <GameScorePage v-else-if="activeView === 'myScore'" :scores="gameScores" @play="activeView = 'game'" />
+
+    <GameScoreRegister v-else :result="pendingGameResult" :regions="weatherList" @play="activeView = 'game'" @register="registerGameScore" />
   </div>
 </template>
 
@@ -516,11 +483,19 @@ const removeRestaurant = (restaurantId) => {
   align-items: center;
   gap: 4px;
   padding: 3px;
+  max-width: 100%;
+  overflow-x: auto;
   background: #f2f4f6;
   border-radius: 11px;
+  scrollbar-width: none;
+}
+
+.site-header nav::-webkit-scrollbar {
+  display: none;
 }
 
 .site-header nav button {
+  flex: none;
   min-height: 32px;
   padding: 0 13px;
   color: #6b7684;
@@ -738,8 +713,7 @@ const removeRestaurant = (restaurantId) => {
   position: relative;
   min-height: 0;
   margin-top: 7px;
-  background: radial-gradient(circle at 50% 46%, rgba(49, 130, 246, 0.09), transparent 48%),
-    linear-gradient(145deg, #fbfdff, #f7faff);
+  background: radial-gradient(circle at 50% 46%, rgba(49, 130, 246, 0.09), transparent 48%), linear-gradient(145deg, #fbfdff, #f7faff);
   border: 1px solid #e8eef5;
   border-radius: 18px;
   overflow: hidden;
@@ -949,9 +923,7 @@ const removeRestaurant = (restaurantId) => {
   min-height: 164px;
   padding: 22px 24px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.9), transparent 8rem),
-    linear-gradient(135deg, #edf6ff, #dfeeff);
+  background: radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.9), transparent 8rem), linear-gradient(135deg, #edf6ff, #dfeeff);
   border: 1px solid #dcecff;
   border-radius: 21px;
 }
@@ -1194,7 +1166,9 @@ const removeRestaurant = (restaurantId) => {
   background: #26364a;
   border: 0;
   border-radius: 16px;
-  transition: transform 150ms ease, background 150ms ease;
+  transition:
+    transform 150ms ease,
+    background 150ms ease;
 }
 
 .menu-recommend-link:hover {
@@ -1409,8 +1383,17 @@ const removeRestaurant = (restaurantId) => {
 
 @media (max-width: 680px) {
   .site-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr);
     width: calc(100% - 20px);
+  }
+
+  .site-header nav {
+    justify-self: stretch;
+    margin-left: 7px;
+  }
+
+  .site-header nav button {
+    padding: 0 10px;
   }
 
   .site-brand small,
