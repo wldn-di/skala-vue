@@ -1,6 +1,7 @@
 const OPEN_WEATHER_ENDPOINT = 'https://api.openweathermap.org/data/2.5/weather'
 const REQUEST_TIMEOUT_MS = 7_000
 const SERVER_CACHE_MS = 10 * 60 * 1_000
+const STALE_CACHE_MS = 60 * 60 * 1_000
 
 // 임의 좌표 프록시로 악용되지 않도록 서버에서 허용한 17개 시·도만 조회합니다.
 export const WEATHER_REGIONS = [
@@ -104,6 +105,16 @@ export const fetchAllRegionWeather = async (apiKey, { forceRefresh = false } = {
   const failedRegionIds = results.flatMap((result, index) => (result.status === 'rejected' ? [WEATHER_REGIONS[index].id] : []))
 
   if (data.length === 0) {
+    const cachedAt = cachedWeatherPayload ? Date.parse(cachedWeatherPayload.fetchedAt) : 0
+    if (cachedWeatherPayload && now - cachedAt < STALE_CACHE_MS) {
+      return {
+        ...cachedWeatherPayload,
+        cached: true,
+        failedRegionIds: WEATHER_REGIONS.map((region) => region.id),
+        stale: true,
+      }
+    }
+
     const error = new Error('All OpenWeather requests failed')
     error.code = results.some((result) => result.status === 'rejected' && result.reason?.code === 'WEATHER_API_UNAUTHORIZED') ? 'WEATHER_API_UNAUTHORIZED' : 'WEATHER_UPSTREAM_FAILED'
     throw error

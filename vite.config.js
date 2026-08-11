@@ -12,11 +12,21 @@ const weatherApiPlugin = (apiKey) => {
     middlewares.use('/api/weather', async (request, response) => {
       response.setHeader('Content-Type', 'application/json; charset=utf-8')
       response.setHeader('X-Content-Type-Options', 'nosniff')
+      response.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
+      response.setHeader('Referrer-Policy', 'no-referrer')
 
       if (request.method !== 'GET') {
         response.statusCode = 405
         response.setHeader('Allow', 'GET')
         response.end(JSON.stringify({ error: 'METHOD_NOT_ALLOWED' }))
+        return
+      }
+
+      const requestUrl = new URL(request.url ?? '/', 'https://local.invalid')
+      if (requestUrl.search) {
+        response.statusCode = 400
+        response.setHeader('Cache-Control', 'no-store')
+        response.end(JSON.stringify({ error: 'QUERY_NOT_ALLOWED' }))
         return
       }
 

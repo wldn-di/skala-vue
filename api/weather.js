@@ -6,6 +6,8 @@ const sendJson = (response, status, body) => {
   response.statusCode = status
   response.setHeader('Content-Type', 'application/json; charset=utf-8')
   response.setHeader('X-Content-Type-Options', 'nosniff')
+  response.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
+  response.setHeader('Referrer-Policy', 'no-referrer')
   response.end(JSON.stringify(body))
 }
 
@@ -13,6 +15,13 @@ export default async function handler(request, response) {
   if (request.method !== 'GET') {
     response.setHeader('Allow', 'GET')
     sendJson(response, 405, { error: 'METHOD_NOT_ALLOWED' })
+    return
+  }
+
+  const requestUrl = new URL(request.url ?? '/api/weather', 'https://local.invalid')
+  if (requestUrl.search) {
+    response.setHeader('Cache-Control', 'no-store')
+    sendJson(response, 400, { error: 'QUERY_NOT_ALLOWED' })
     return
   }
 
