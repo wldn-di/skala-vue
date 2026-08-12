@@ -56,15 +56,15 @@ const displayTemp = computed(() => {
   width: min(720px, calc(100% - 32px));
   margin: 0 auto;
   padding: 70px 0;
-  color: #26364a;
+  color: #40513b;
 }
 
 .detail-card {
   padding: 30px;
-  background: #fff;
-  border: 1px solid #dfe5ec;
+  background: #fffaf0;
+  border: 1px solid #e6d8b9;
   border-radius: 24px;
-  box-shadow: 0 14px 40px rgba(29, 59, 93, 0.1);
+  box-shadow: 0 14px 40px rgba(87, 65, 26, 0.11);
 }
 
 header {
@@ -79,13 +79,14 @@ header > span {
   width: 58px;
   height: 58px;
   font-size: 2rem;
-  background: #eef6ff;
+  background: #fff0bd;
+  border: 1px solid #e5ca74;
   border-radius: 18px;
 }
 
 header p {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -108,7 +109,7 @@ h1 {
 }
 
 .temperature span {
-  color: #6b7684;
+  color: #70766a;
 }
 
 dl {
@@ -120,12 +121,12 @@ dl {
 
 dl div {
   padding: 14px;
-  background: #f7f9fb;
+  background: #f3eddf;
   border-radius: 12px;
 }
 
 dt {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.7rem;
 }
 
@@ -143,7 +144,7 @@ dd {
 }
 
 .empty p {
-  color: #6b7684;
+  color: #70766a;
 }
 
 .back-button {
@@ -151,7 +152,7 @@ dd {
   margin-top: 16px;
   color: #fff;
   font-weight: 800;
-  background: #26364a;
+  background: #40513b;
   border: 0;
   border-radius: 10px;
 }

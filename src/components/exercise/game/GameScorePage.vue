@@ -156,10 +156,10 @@ const formatDate = (date) =>
   gap: 14px;
   height: 100%;
   padding: 22px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(220, 228, 237, 0.9);
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid rgba(226, 214, 187, 0.92);
   border-radius: 22px;
-  box-shadow: 0 12px 38px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 12px 38px rgba(87, 65, 26, 0.1);
 }
 
 .score-heading,
@@ -172,7 +172,7 @@ const formatDate = (date) =>
 .score-heading p,
 .history-panel header small {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.57rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -180,13 +180,13 @@ const formatDate = (date) =>
 
 .score-heading h1 {
   margin: 3px 0 1px;
-  color: #202b3a;
+  color: #2d382b;
   font-size: 1.35rem;
   font-weight: 900;
 }
 
 .score-heading > div > span {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.66rem;
 }
 
@@ -197,7 +197,7 @@ const formatDate = (date) =>
   color: #fff;
   font-size: 0.66rem;
   font-weight: 850;
-  background: #3182f6;
+  background: #a86412;
   border: 0;
   border-radius: 11px;
 }
@@ -211,27 +211,27 @@ const formatDate = (date) =>
 
 .score-summary > div {
   padding: 16px 18px;
-  background: #f7f9fc;
-  border: 1px solid #e8edf3;
+  background: #fff8df;
+  border: 1px solid #ebddb3;
   border-radius: 17px;
 }
 
 .score-summary dt {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.61rem;
   font-weight: 700;
 }
 
 .score-summary dd {
   margin: 5px 0 0;
-  color: #253448;
+  color: #354133;
   font-size: 1.45rem;
   font-weight: 900;
 }
 
 .score-summary dd small {
   margin-left: 3px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.6rem;
   font-weight: 700;
 }
@@ -247,14 +247,14 @@ const formatDate = (date) =>
   min-height: 0;
   padding: 18px;
   overflow: hidden;
-  background: #fbfcfe;
-  border: 1px solid #e8edf3;
+  background: #f6f1e5;
+  border: 1px solid #e2d6bd;
   border-radius: 18px;
 }
 
 .history-panel h2 {
   margin: 2px 0 0;
-  color: #344054;
+  color: #354133;
   font-size: 0.92rem;
   font-weight: 850;
 }
@@ -263,7 +263,7 @@ const formatDate = (date) =>
   display: flex;
   gap: 3px;
   padding: 3px;
-  background: #eef1f5;
+  background: #e8e4d6;
   border-radius: 10px;
 }
 
@@ -279,9 +279,9 @@ const formatDate = (date) =>
 }
 
 .ranking-tabs button.active {
-  color: #1b64da;
+  color: #40513b;
   background: #fff;
-  box-shadow: 0 2px 7px rgba(27, 65, 105, 0.08);
+  box-shadow: 0 2px 7px rgba(72, 83, 58, 0.08);
 }
 
 .score-list {
@@ -308,7 +308,7 @@ const formatDate = (date) =>
   min-height: 57px;
   padding: 8px 12px;
   background: #fff;
-  border: 1px solid #e9edf2;
+  border: 1px solid #e7ddc8;
   border-radius: 13px;
 }
 
@@ -317,10 +317,10 @@ const formatDate = (date) =>
   place-items: center;
   width: 28px;
   height: 28px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.67rem;
   font-weight: 900;
-  background: #f1f3f6;
+  background: #f1ede2;
   border-radius: 9px;
 }
 
@@ -336,19 +336,19 @@ const formatDate = (date) =>
 }
 
 .ranking-row > div strong {
-  color: #344054;
+  color: #354133;
   font-size: 0.7rem;
   font-weight: 850;
 }
 
 .ranking-row small,
 .ranking-row > span {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.56rem;
 }
 
 .ranking-row > b {
-  color: #1b64da;
+  color: #40513b;
   font-size: 0.74rem;
   font-weight: 900;
   text-align: right;
@@ -362,7 +362,7 @@ const formatDate = (date) =>
   min-height: 57px;
   padding: 8px 12px;
   background: #fff;
-  border: 1px solid #e9edf2;
+  border: 1px solid #e7ddc8;
   border-radius: 13px;
 }
 
@@ -371,10 +371,10 @@ const formatDate = (date) =>
   place-items: center;
   width: 28px;
   height: 28px;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.65rem;
   font-weight: 900;
-  background: #eaf3ff;
+  background: #fff0bd;
   border-radius: 9px;
 }
 
@@ -396,7 +396,7 @@ const formatDate = (date) =>
 
 .player strong,
 .score-row > b {
-  color: #344054;
+  color: #354133;
   font-size: 0.69rem;
   font-weight: 850;
 }
@@ -404,12 +404,12 @@ const formatDate = (date) =>
 .player small,
 .score-row time,
 .food-count {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.56rem;
 }
 
 .score-row > b {
-  color: #1b64da;
+  color: #40513b;
   text-align: right;
 }
 
@@ -429,20 +429,20 @@ const formatDate = (date) =>
   width: 64px;
   height: 64px;
   font-size: 1.8rem;
-  background: #eaf3ff;
+  background: #fff0bd;
   border-radius: 20px;
 }
 
 .empty-score strong {
   margin-top: 12px;
-  color: #344054;
+  color: #354133;
   font-size: 0.9rem;
   font-weight: 850;
 }
 
 .empty-score p {
   margin: 4px 0 14px;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.62rem;
 }
 

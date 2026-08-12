@@ -116,10 +116,10 @@ const submitScore = () => {
 .register-card {
   width: 100%;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(220, 228, 237, 0.9);
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid rgba(226, 214, 187, 0.92);
   border-radius: 24px;
-  box-shadow: 0 15px 45px rgba(29, 59, 93, 0.1);
+  box-shadow: 0 15px 45px rgba(87, 65, 26, 0.12);
 }
 
 .register-layout {
@@ -140,13 +140,13 @@ const submitScore = () => {
 .result-preview {
   padding: 35px;
   text-align: center;
-  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.35), transparent 9rem), linear-gradient(145deg, #25364c, #18283d);
+  background: radial-gradient(circle at 50% 30%, rgba(255, 246, 194, 0.17), transparent 9rem), linear-gradient(145deg, #4d5d45, #293326);
 }
 
 .result-preview > small,
 .register-form > div small,
 .empty-result > small {
-  color: #77aef9;
+  color: #f2cf67;
   font-size: 0.57rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -167,7 +167,7 @@ const submitScore = () => {
 
 .result-preview > p {
   margin: 0;
-  color: #b9c8da;
+  color: #d9dfc7;
   font-size: 0.68rem;
 }
 
@@ -187,7 +187,7 @@ const submitScore = () => {
 }
 
 .result-preview dt {
-  color: #8fa3bc;
+  color: #c8d0b7;
   font-size: 0.53rem;
 }
 
@@ -205,21 +205,21 @@ const submitScore = () => {
 
 .register-form h2 {
   margin: 4px 0 3px;
-  color: #253448;
+  color: #354133;
   font-size: 1.35rem;
   font-weight: 900;
 }
 
 .register-form > div > p {
   margin: 0 0 26px;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.66rem;
 }
 
 .register-form > label {
   margin-top: 13px;
   margin-bottom: 7px;
-  color: #536274;
+  color: #5c6253;
   font-size: 0.66rem;
   font-weight: 800;
 }
@@ -229,16 +229,16 @@ const submitScore = () => {
   width: 100%;
   height: 48px;
   padding: 0 13px;
-  color: #344054;
-  background: #f7f9fb;
-  border: 1px solid #dfe5ec;
+  color: #354133;
+  background: #fffaf0;
+  border: 1px solid #dfd0ae;
   border-radius: 12px;
   outline: none;
 }
 
 .register-form > select {
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, #8b95a1 50%), linear-gradient(135deg, #8b95a1 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, #8f9187 50%), linear-gradient(135deg, #8f9187 50%, transparent 50%);
   background-position:
     calc(100% - 17px) 21px,
     calc(100% - 12px) 21px;
@@ -250,8 +250,8 @@ const submitScore = () => {
 
 .register-form > input:focus,
 .register-form > select:focus {
-  border-color: #3182f6;
-  box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.11);
+  border-color: #a86412;
+  box-shadow: 0 0 0 3px rgba(168, 100, 18, 0.11);
 }
 
 .character-count {
@@ -274,7 +274,7 @@ const submitScore = () => {
   color: #fff;
   font-size: 0.69rem;
   font-weight: 850;
-  background: #3182f6;
+  background: #a86412;
   border: 0;
   border-radius: 12px;
 }
@@ -299,20 +299,20 @@ const submitScore = () => {
   height: 75px;
   margin-bottom: 13px;
   font-size: 2.2rem;
-  background: #eaf3ff;
+  background: #fff0bd;
   border-radius: 23px;
 }
 
 .empty-result h1 {
   margin: 5px 0 0;
-  color: #344054;
+  color: #354133;
   font-size: 1.15rem;
   font-weight: 900;
 }
 
 .empty-result p {
   margin: 6px 0 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.65rem;
 }
 

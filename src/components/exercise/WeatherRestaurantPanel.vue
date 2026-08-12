@@ -183,8 +183,8 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
 .restaurant-form {
   margin-top: 10px;
   padding: 13px 14px;
-  background: #f8fafc;
-  border: 1px solid #e7edf3;
+  background: #f3eddf;
+  border: 1px solid #e2d6bd;
   border-radius: 15px;
 }
 
@@ -201,7 +201,7 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
 }
 
 .form-title small {
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.09em;
@@ -209,16 +209,16 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
 
 .form-title strong {
   margin-top: 2px;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.82rem;
 }
 
 .form-title > span {
   padding: 5px 8px;
-  color: #1b64da;
+  color: #40513b;
   font-size: 0.65rem;
   font-weight: 800;
-  background: #e8f3ff;
+  background: #fff1c9;
   border-radius: 999px;
 }
 
@@ -237,7 +237,7 @@ label {
 label > span {
   display: block;
   margin: 0 0 4px 2px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.59rem;
   font-weight: 700;
 }
@@ -252,17 +252,17 @@ input {
   width: 100%;
   height: 34px;
   padding: 0 10px;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.7rem;
   background: #fff;
-  border: 1px solid #dfe5ec;
+  border: 1px solid #dfd0ae;
   border-radius: 9px;
   outline: none;
 }
 
 input:focus {
-  border-color: #75aaf2;
-  box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.08);
+  border-color: #d8ad3d;
+  box-shadow: 0 0 0 3px rgba(168, 100, 18, 0.08);
 }
 
 .form-actions {
@@ -273,7 +273,7 @@ input:focus {
 .form-actions p {
   overflow: hidden;
   margin: 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.58rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -294,7 +294,7 @@ input:focus {
   color: #fff;
   font-size: 0.66rem;
   font-weight: 800;
-  background: #3182f6;
+  background: #a86412;
   border: 0;
   border-radius: 9px;
 }
@@ -316,7 +316,7 @@ input:focus {
   gap: 9px;
   padding: 10px 11px;
   background: #fff;
-  border: 1px solid #e8edf2;
+  border: 1px solid #e7ddc8;
   border-radius: 12px;
 }
 
@@ -339,7 +339,7 @@ input:focus {
 .restaurant-item strong,
 .restaurant-empty strong {
   display: block;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.7rem;
 }
 
@@ -354,7 +354,7 @@ input:focus {
 .restaurant-item p,
 .restaurant-empty p {
   margin: 3px 0 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.58rem;
 }
 
@@ -369,7 +369,7 @@ input:focus {
 .restaurant-empty {
   align-items: center;
   margin: auto 0;
-  background: #fafbfc;
+  background: #faf6ed;
   border-style: dashed;
 }
 </style>

@@ -531,8 +531,18 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 <style scoped>
 .weather-bite-app {
+  --sun: #f4bd3e;
+  --sun-deep: #a86412;
+  --olive: #40513b;
+  --olive-deep: #2d382b;
+  --cream: #fffaf0;
+  --sand: #f2e6c7;
+  --coral: #d96b43;
   min-height: 100svh;
-  color: #191f28;
+  color: #293126;
+  background:
+    radial-gradient(circle at 8% 15%, rgba(244, 189, 62, 0.13), transparent 25rem),
+    radial-gradient(circle at 92% 78%, rgba(64, 81, 59, 0.09), transparent 24rem);
 }
 
 .site-header {
@@ -545,11 +555,11 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   height: 54px;
   margin: 12px auto 0;
   padding: 6px 8px 6px 12px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(221, 228, 236, 0.92);
+  background: rgba(255, 252, 244, 0.9);
+  border: 1px solid rgba(226, 214, 187, 0.94);
   border-radius: 16px;
   backdrop-filter: blur(18px);
-  box-shadow: 0 9px 28px rgba(24, 52, 82, 0.08);
+  box-shadow: 0 9px 28px rgba(87, 65, 26, 0.09);
 }
 
 .site-brand {
@@ -569,7 +579,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   width: 32px;
   height: 32px;
   font-size: 1.15rem;
-  background: #3182f6;
+  background: var(--sun);
   border-radius: 10px;
 }
 
@@ -580,12 +590,12 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .site-brand strong {
-  color: #202b3a;
+  color: var(--olive-deep);
   font-size: 0.78rem;
 }
 
 .site-brand small {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.45rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -598,7 +608,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   padding: 3px;
   max-width: 100%;
   overflow-x: auto;
-  background: #f2f4f6;
+  background: #f3eddf;
   border-radius: 11px;
   scrollbar-width: none;
 }
@@ -611,7 +621,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   flex: none;
   min-height: 32px;
   padding: 0 13px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.67rem;
   font-weight: 800;
   background: transparent;
@@ -620,9 +630,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .site-header nav button.active {
-  color: #1b64da;
-  background: #fff;
-  box-shadow: 0 3px 8px rgba(27, 65, 105, 0.08);
+  color: var(--olive-deep);
+  background: #fff9e9;
+  box-shadow: 0 3px 8px rgba(88, 67, 27, 0.1);
 }
 
 .site-header nav span {
@@ -633,7 +643,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   margin-left: 3px;
   color: #fff;
   font-size: 0.49rem;
-  background: #ff8a3d;
+  background: var(--coral);
   border-radius: 999px;
 }
 
@@ -643,7 +653,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   justify-self: end;
   gap: 7px;
   padding: 5px 9px;
-  background: #f4f8fd;
+  background: #f5edcf;
   border-radius: 10px;
 }
 
@@ -652,12 +662,12 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .header-weather small {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.48rem;
 }
 
 .header-weather strong {
-  color: #344054;
+  color: var(--olive-deep);
   font-size: 0.6rem;
 }
 
@@ -677,9 +687,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .dashboard-card {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(220, 228, 237, 0.9);
-  box-shadow: 0 12px 38px rgba(29, 59, 93, 0.08);
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid rgba(226, 214, 187, 0.92);
+  box-shadow: 0 12px 38px rgba(87, 65, 26, 0.09);
 }
 
 .nationwide-page {
@@ -742,7 +752,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 .list-title p,
 .popular-foods p {
   margin: 0;
-  color: #3182f6;
+  color: var(--sun-deep);
   font-size: 0.57rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -750,7 +760,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .card-heading h1 {
   margin: 4px 0 0;
-  color: #202b3a;
+  color: var(--olive-deep);
   font-size: clamp(1.05rem, 1.45vw, 1.36rem);
   letter-spacing: -0.045em;
 }
@@ -764,7 +774,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .map-breadcrumb button {
   padding: 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: inherit;
   font-weight: 800;
   background: transparent;
@@ -772,7 +782,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .map-breadcrumb button:hover {
-  color: #1b64da;
+  color: var(--sun-deep);
 }
 
 .mock-badge {
@@ -780,10 +790,10 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   align-items: center;
   gap: 6px;
   padding: 7px 9px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.6rem;
   font-weight: 800;
-  background: #f2f4f6;
+  background: #f3eddf;
   border-radius: 999px;
 }
 
@@ -810,7 +820,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 .weather-refresh-button {
   min-height: 30px;
   padding: 0 9px;
-  color: #536274;
+  color: #5c6253;
   font-size: 0.58rem;
   font-weight: 800;
   background: #fff;
@@ -820,8 +830,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .weather-sync-actions > button:hover,
 .weather-refresh-button:hover {
-  color: #1b64da;
-  border-color: #a9c9f5;
+  color: var(--olive);
+  border-color: #c8b677;
 }
 
 .weather-sync-actions > button:disabled,
@@ -840,8 +850,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .mock-badge.api-loading i,
 .api-state.api-loading i {
-  background: #3182f6;
-  box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12);
+  background: var(--sun-deep);
+  box-shadow: 0 0 0 4px rgba(168, 100, 18, 0.14);
   animation: api-pulse 900ms ease-in-out infinite alternate;
 }
 
@@ -882,10 +892,36 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   position: relative;
   min-height: 0;
   margin-top: 7px;
-  background: radial-gradient(circle at 50% 46%, rgba(49, 130, 246, 0.09), transparent 48%), linear-gradient(145deg, #fbfdff, #f7faff);
-  border: 1px solid #e8eef5;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(244, 189, 62, 0.2), transparent 45%),
+    radial-gradient(circle at 14% 82%, rgba(98, 119, 79, 0.1), transparent 27%),
+    linear-gradient(145deg, #fffaf0, #f3eddb);
+  border: 1px solid #e6d8b9;
   border-radius: 18px;
   overflow: hidden;
+}
+
+.map-stage::before {
+  position: absolute;
+  top: -54px;
+  right: -42px;
+  width: 180px;
+  height: 180px;
+  background: rgba(244, 189, 62, 0.16);
+  border: 1px solid rgba(201, 132, 24, 0.15);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+}
+
+.map-stage::after {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(64, 81, 59, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+  content: '';
+  opacity: 0.32;
+  pointer-events: none;
 }
 
 .map-back-button {
@@ -895,17 +931,17 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   z-index: 8;
   min-height: 34px;
   padding: 0 11px;
-  color: #53657a;
+  color: #5c6253;
   font-size: 0.62rem;
   font-weight: 800;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid #dfe7ef;
+  background: rgba(255, 251, 239, 0.96);
+  border: 1px solid #dfd0ae;
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(24, 52, 82, 0.12);
+  box-shadow: 0 6px 18px rgba(87, 65, 26, 0.14);
 }
 
 .map-back-button:hover {
-  color: #1b64da;
+  color: var(--sun-deep);
 }
 
 .map-footer {
@@ -914,17 +950,17 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   justify-content: space-between;
   gap: 12px;
   padding: 8px 2px 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.55rem;
 }
 
 .map-footer b {
   margin-right: 4px;
-  color: #3182f6;
+  color: var(--sun-deep);
 }
 
 .map-footer a {
-  color: #8b95a1;
+  color: #8f9187;
   text-decoration: none;
 }
 
@@ -933,6 +969,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   flex-direction: column;
   padding: 18px;
   overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(249, 244, 229, 0.98));
 }
 
 .empty-detail-panel,
@@ -944,8 +982,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   flex-direction: column;
   min-height: 0;
   text-align: center;
-  background: linear-gradient(145deg, #fbfdff, #f3f8ff);
-  border: 1px dashed #cfddec;
+  background: linear-gradient(145deg, #fffaf0, #f1f1df);
+  border: 1px dashed #d9ca9f;
   border-radius: 18px;
 }
 
@@ -957,13 +995,13 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   height: 70px;
   margin-bottom: 13px;
   font-size: 2rem;
-  background: #e8f3ff;
+  background: #fff0bd;
   border-radius: 22px;
 }
 
 .empty-detail-panel > small,
 .district-empty > small {
-  color: #3182f6;
+  color: var(--sun-deep);
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -972,14 +1010,14 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 .empty-detail-panel > strong,
 .district-empty > strong {
   margin-top: 5px;
-  color: #253448;
+  color: var(--olive-deep);
   font-size: 1rem;
 }
 
 .empty-detail-panel > p,
 .district-empty > p {
   margin: 8px 0 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.67rem;
   line-height: 1.65;
 }
@@ -990,7 +1028,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   gap: 6px;
   margin-top: 22px;
   padding: 9px 12px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.59rem;
   font-weight: 700;
   background: #fff;
@@ -1005,7 +1043,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   height: 17px;
   color: #fff;
   font-size: 0.52rem;
-  background: #3182f6;
+  background: var(--olive);
   border-radius: 50%;
 }
 
@@ -1024,7 +1062,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .detail-heading h2 {
   margin: 0;
-  color: #253448;
+  color: var(--olive-deep);
   font-size: 1.25rem;
   letter-spacing: -0.045em;
 }
@@ -1035,7 +1073,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   width: 46px;
   height: 46px;
   font-size: 1.55rem;
-  background: #f1f7ff;
+  background: linear-gradient(145deg, #fff4c9, #f4d876);
+  border: 1px solid #e5ca74;
+  box-shadow: 0 7px 16px rgba(139, 96, 19, 0.12);
   border-radius: 15px;
 }
 
@@ -1045,13 +1085,13 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   gap: 5px;
   margin: 13px 0 11px;
   padding: 4px;
-  background: #f2f4f6;
+  background: #f3eddf;
   border-radius: 12px;
 }
 
 .panel-tabs button {
   min-height: 34px;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.7rem;
   font-weight: 750;
   background: transparent;
@@ -1060,9 +1100,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .panel-tabs button.active {
-  color: #1b64da;
-  background: #fff;
-  box-shadow: 0 3px 9px rgba(27, 65, 105, 0.08);
+  color: #fffdf6;
+  background: var(--olive);
+  box-shadow: 0 4px 10px rgba(45, 56, 43, 0.18);
 }
 
 .panel-tabs span {
@@ -1073,7 +1113,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   margin-left: 3px;
   color: #fff;
   font-size: 0.52rem;
-  background: #ff8a3d;
+  background: var(--coral);
   border-radius: 999px;
 }
 
@@ -1092,8 +1132,10 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   min-height: 164px;
   padding: 22px 24px;
   overflow: hidden;
-  background: radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.9), transparent 8rem), linear-gradient(135deg, #edf6ff, #dfeeff);
-  border: 1px solid #dcecff;
+  background:
+    radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.88), transparent 8rem),
+    linear-gradient(135deg, #fff0b6, #eacb68);
+  border: 1px solid #e3c975;
   border-radius: 21px;
 }
 
@@ -1115,7 +1157,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .temperature-content > small {
-  color: #4e79ac;
+  color: #8a651e;
   font-size: 0.57rem;
   font-weight: 800;
 }
@@ -1128,7 +1170,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .temperature-hero strong {
-  color: #172b46;
+  color: var(--olive-deep);
   font-size: clamp(3.8rem, 7.8vh, 5.2rem);
   font-weight: 350;
   line-height: 0.85;
@@ -1143,7 +1185,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .temperature-hero p {
   margin: 0 0 5px;
-  color: #425b78;
+  color: #596346;
   font-size: 1rem;
   font-weight: 800;
 }
@@ -1161,7 +1203,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 32px;
   backdrop-filter: blur(9px);
-  box-shadow: 0 14px 34px rgba(35, 79, 128, 0.12);
+  box-shadow: 0 14px 34px rgba(117, 86, 23, 0.14);
 }
 
 .large-label {
@@ -1177,8 +1219,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .large-label.cool {
-  color: #1b64da;
-  background: #e3f0ff;
+  color: var(--olive);
+  background: #e8eedb;
 }
 
 .weather-advice {
@@ -1188,8 +1230,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   min-height: 62px;
   margin-top: 10px;
   padding: 11px 14px;
-  background: #f8fafc;
-  border: 1px solid #e9edf2;
+  background: #f0f3e8;
+  border: 1px solid #dbe3ce;
   border-radius: 15px;
 }
 
@@ -1199,7 +1241,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   place-items: center;
   width: 38px;
   height: 38px;
-  background: #fff3e9;
+  background: #fff0bd;
   border-radius: 12px;
 }
 
@@ -1211,7 +1253,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .weather-advice small {
-  color: #ff7a2d;
+  color: #8a651e;
   font-size: 0.49rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -1219,7 +1261,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .weather-advice strong {
   margin-top: 3px;
-  color: #536274;
+  color: #4e5a43;
   font-size: 0.65rem;
   line-height: 1.45;
 }
@@ -1237,9 +1279,24 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   min-height: 72px;
   padding: 14px 10px 12px 50px;
   text-align: left;
-  background: #f8fafc;
-  border: 1px solid #e9edf2;
+  background: #fff8df;
+  border: 1px solid #ebddb3;
   border-radius: 15px;
+}
+
+.weather-metrics > div:nth-child(2) {
+  background: #eef2e5;
+  border-color: #d8e0cb;
+}
+
+.weather-metrics > div:nth-child(3) {
+  background: #fff1e7;
+  border-color: #f0d7c3;
+}
+
+.weather-metrics > div:nth-child(4) {
+  background: #f3eddf;
+  border-color: #e2d6bd;
 }
 
 .weather-metrics > div::before {
@@ -1249,7 +1306,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   width: 30px;
   height: 30px;
   font-size: 0.95rem;
-  background: #eaf3ff;
+  background: #f3d979;
   border-radius: 10px;
   content: '🌡️';
   top: 19px;
@@ -1258,25 +1315,28 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 
 .weather-metrics > div:nth-child(2)::before {
   content: '💧';
+  background: #dce6cc;
 }
 
 .weather-metrics > div:nth-child(3)::before {
   content: '☔';
+  background: #f6d2bb;
 }
 
 .weather-metrics > div:nth-child(4)::before {
   content: '🍃';
+  background: #d8dfca;
 }
 
 .weather-metrics dt {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.57rem;
 }
 
 .weather-metrics dd {
   overflow: hidden;
   margin: 4px 0 0;
-  color: #344054;
+  color: var(--olive-deep);
   font-size: 0.8rem;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -1290,8 +1350,8 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   margin-top: 10px;
   min-height: 72px;
   padding: 12px 13px;
-  background: #fff8f3;
-  border: 1px solid #ffe6d4;
+  background: #fff4df;
+  border: 1px solid #ecd9ad;
   border-radius: 16px;
 }
 
@@ -1301,23 +1361,23 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .popular-foods p {
-  color: #ef7627;
+  color: var(--sun-deep);
   font-size: 0.49rem;
 }
 
 .popular-foods strong {
   display: block;
   margin-top: 2px;
-  color: #7b3c16;
+  color: var(--olive-deep);
   font-size: 0.72rem;
 }
 
 .popular-foods > span {
   padding: 7px 9px;
-  color: #9a4b1b;
+  color: #75520e;
   font-size: 0.61rem;
   font-weight: 700;
-  background: #fff;
+  background: #fffdf6;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -1332,7 +1392,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   padding: 12px 15px;
   color: inherit;
   text-align: left;
-  background: #26364a;
+  background: var(--olive);
   border: 0;
   border-radius: 16px;
   transition:
@@ -1341,7 +1401,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .menu-recommend-link:hover {
-  background: #1e2d40;
+  background: var(--olive-deep);
   transform: translateY(-1px);
 }
 
@@ -1361,7 +1421,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
 }
 
 .menu-recommend-link small {
-  color: #9fb4cc;
+  color: #d9dfc7;
   font-size: 0.59rem;
 }
 
@@ -1390,13 +1450,13 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   place-items: center;
   width: 33px;
   height: 33px;
-  background: #eef6ff;
+  background: #fff0bd;
   border-radius: 10px;
 }
 
 .list-title h2 {
   margin: 1px 0 0;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.82rem;
 }
 
@@ -1425,9 +1485,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   display: grid;
   place-items: center;
   height: calc(100% - 110px);
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.75rem;
-  background: #f8fafc;
+  background: #f7f2e7;
   border-radius: 12px;
 }
 

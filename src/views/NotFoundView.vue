@@ -32,17 +32,17 @@ const goHome = () => {
   align-items: center;
   /* 부모 요소(예: App.vue)에서 남은 높이를 다 쓰도록 설정 */
   min-height: 80vh;
-  background-color: #f8f9fa; /* 아주 연한 회색 배경 */
+  background-color: #fbf7ec;
   font-family: 'Noto Sans KR', sans-serif; /* 기본 폰트 설정 (옵션) */
 }
 
 .not-found-content {
   text-align: center;
-  background-color: #ffffff;
+  background-color: #fffaf0;
   padding: 50px;
   border-radius: 16px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 은은한 그림자 */
-  border: 1px solid #e9ecef;
+  border: 1px solid #e6d8b9;
 }
 
 .error-icon {
@@ -66,7 +66,7 @@ p {
 }
 
 .home-button {
-  background-color: #007bff; /* 날씨 앱 포인트 컬러 (파란색) */
+  background-color: #40513b;
   color: white;
   border: none;
   padding: 12px 30px;
@@ -81,7 +81,7 @@ p {
 
 /* Hover 및 Active 효과 */
 .home-button:hover {
-  background-color: #0056b3; /* 조금 짙은 파란색 */
+  background-color: #2d382b;
 }
 
 .home-button:active {

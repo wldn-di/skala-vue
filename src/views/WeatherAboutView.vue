@@ -28,7 +28,8 @@ const handleGoHome = () => {
 
 <style scoped>
 .description-box {
-  background-color: #f8f9fa;
+  background-color: #fffaf0;
+  border: 1px solid #e6d8b9;
   padding: 12px;
   border-radius: 6px;
   line-height: 1.5;
@@ -56,7 +57,7 @@ code {
   width: 100%;
   margin-top: 15px;
   padding: 10px;
-  background-color: #3498db;
+  background-color: #40513b;
   color: white;
   border: none;
   border-radius: 4px;

@@ -92,10 +92,10 @@ defineEmits(['finish', 'go-register'])
   height: 100%;
   min-height: 0;
   padding: 20px 22px 12px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(220, 228, 237, 0.9);
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid rgba(226, 214, 187, 0.92);
   border-radius: 22px;
-  box-shadow: 0 12px 38px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 12px 38px rgba(87, 65, 26, 0.1);
 }
 
 .game-heading {
@@ -110,7 +110,7 @@ defineEmits(['finish', 'go-register'])
 .mission-card small,
 .result-card small {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.57rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -118,14 +118,14 @@ defineEmits(['finish', 'go-register'])
 
 .game-heading h1 {
   margin: 3px 0 2px;
-  color: #202b3a;
+  color: #2d382b;
   font-size: 1.35rem;
   font-weight: 900;
   letter-spacing: -0.045em;
 }
 
 .game-heading > div > span {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.66rem;
 }
 
@@ -135,7 +135,8 @@ defineEmits(['finish', 'go-register'])
   gap: 9px;
   min-width: 180px;
   padding: 9px 12px;
-  background: #f1f7ff;
+  background: #fff0bd;
+  border: 1px solid #e5ca74;
   border-radius: 13px;
 }
 
@@ -149,12 +150,12 @@ defineEmits(['finish', 'go-register'])
 }
 
 .weather-chip small {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.49rem;
 }
 
 .weather-chip strong {
-  color: #344054;
+  color: #354133;
   font-size: 0.67rem;
   font-weight: 850;
 }
@@ -220,8 +221,8 @@ defineEmits(['finish', 'go-register'])
 }
 
 .mission-card.guide {
-  background: #f7f9fc;
-  border: 1px solid #e6ebf1;
+  background: #f0f3e8;
+  border: 1px solid #dbe3ce;
 }
 
 .mission-card ol {
@@ -236,7 +237,7 @@ defineEmits(['finish', 'go-register'])
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #59687a;
+  color: #596346;
   font-size: 0.62rem;
 }
 
@@ -246,10 +247,10 @@ defineEmits(['finish', 'go-register'])
   place-items: center;
   width: 22px;
   height: 22px;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.56rem;
   font-weight: 900;
-  background: #e7f1ff;
+  background: #fff0bd;
   border-radius: 8px;
 }
 
@@ -300,12 +301,12 @@ defineEmits(['finish', 'go-register'])
 }
 
 .game-source a {
-  color: #6b7684;
+  color: #70766a;
   text-decoration: none;
 }
 
 .game-source a:hover {
-  color: #1b64da;
+  color: #40513b;
   text-decoration: underline;
 }
 

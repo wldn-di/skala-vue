@@ -219,7 +219,7 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 
 .menu-intro h1 {
   margin: 7px 0 8px;
-  color: #202b3a;
+  color: #2d382b;
   font-size: clamp(1.6rem, 3vw, 2.25rem);
   letter-spacing: -0.06em;
 }
@@ -227,11 +227,11 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 .menu-intro > span {
   display: inline-flex;
   padding: 7px 11px;
-  color: #4e5968;
+  color: #596052;
   font-size: 0.68rem;
   font-weight: 700;
   background: #fff;
-  border: 1px solid #e4eaf1;
+  border: 1px solid #e5dac4;
   border-radius: 999px;
 }
 
@@ -245,10 +245,10 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 .roulette-card,
 .picker-controls {
   min-height: 0;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e1e7ee;
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid #e6d8b9;
   border-radius: 24px;
-  box-shadow: 0 16px 42px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 16px 42px rgba(87, 65, 26, 0.1);
 }
 
 .roulette-card {
@@ -352,14 +352,14 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 
 .result-copy h2 {
   margin: 4px 0;
-  color: #202b3a;
+  color: #2d382b;
   font-size: clamp(1.8rem, 4vh, 2.8rem);
   letter-spacing: -0.06em;
 }
 
 .result-copy p {
   margin: 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.7rem;
 }
 
@@ -394,8 +394,8 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 
 .control-section {
   padding: 15px;
-  background: #f8fafc;
-  border: 1px solid #e7ecf2;
+  background: #f3eddf;
+  border: 1px solid #e2d6bd;
   border-radius: 17px;
 }
 
@@ -411,7 +411,7 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 }
 
 .control-title small {
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.52rem;
   font-weight: 900;
   letter-spacing: 0.09em;
@@ -419,16 +419,16 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 
 .control-title strong {
   margin-top: 2px;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.82rem;
 }
 
 .control-title > span {
   padding: 5px 8px;
-  color: #1b64da;
+  color: #40513b;
   font-size: 0.58rem;
   font-weight: 800;
-  background: #e8f3ff;
+  background: #fff1c9;
   border-radius: 999px;
 }
 
@@ -446,14 +446,14 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   padding: 11px;
   text-align: left;
   background: #fff;
-  border: 1px solid #e3e8ee;
+  border: 1px solid #e3d8c2;
   border-radius: 12px;
 }
 
 .mode-buttons button.active {
-  background: #eef6ff;
-  border-color: #64a0f2;
-  box-shadow: inset 0 0 0 1px #64a0f2;
+  background: #fff0bd;
+  border-color: #d8ad3d;
+  box-shadow: inset 0 0 0 1px #d8ad3d;
 }
 
 .mode-buttons button > span {
@@ -463,12 +463,12 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 }
 
 .mode-buttons b {
-  color: #344054;
+  color: #354133;
   font-size: 0.7rem;
 }
 
 .mode-buttons small {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.56rem;
 }
 
@@ -481,18 +481,18 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
 
 .category-buttons button {
   min-height: 36px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.62rem;
   font-weight: 750;
   background: #fff;
-  border: 1px solid #e3e8ee;
+  border: 1px solid #e3d8c2;
   border-radius: 10px;
 }
 
 .category-buttons button.active {
   color: #fff;
-  background: #3182f6;
-  border-color: #3182f6;
+  background: #a86412;
+  border-color: #a86412;
 }
 
 .menu-cloud {
@@ -561,4 +561,3 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   }
 }
 </style>
-

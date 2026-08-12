@@ -61,12 +61,12 @@ const showDetail = (city) => {
   width: min(800px, calc(100% - 32px));
   margin: 0 auto;
   padding: 54px 0;
-  color: #26364a;
+  color: #40513b;
 }
 
 header > p {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.12em;

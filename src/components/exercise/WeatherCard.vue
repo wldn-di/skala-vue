@@ -100,7 +100,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   min-width: 0;
   padding: 9px 9px 8px;
   background: #fff;
-  border: 1px solid #e6ebf1;
+  border: 1px solid #e4dac6;
   border-radius: 13px;
   cursor: pointer;
   transition:
@@ -111,16 +111,16 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 
 .weather-mini-card:hover,
 .weather-mini-card:focus-visible {
-  border-color: #91bdf8;
+  border-color: #dfb64b;
   outline: none;
   transform: translateY(-1px);
-  box-shadow: 0 7px 16px rgba(49, 130, 246, 0.1);
+  box-shadow: 0 7px 16px rgba(146, 98, 23, 0.13);
 }
 
 .weather-mini-card.is-selected {
-  background: #f4f9ff;
-  border-color: #3182f6;
-  box-shadow: inset 0 0 0 1px #3182f6;
+  background: #fff9e8;
+  border-color: #d99a1b;
+  box-shadow: inset 0 0 0 1px #d99a1b;
 }
 
 .mini-heading,
@@ -132,7 +132,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 
 .mini-heading strong {
   overflow: hidden;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -155,7 +155,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 }
 
 .mini-weather small {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.62rem;
 }
 
@@ -174,7 +174,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 }
 
 .temperature-label.cool {
-  color: #2774e8;
+  color: #596b47;
 }
 
 .detail-button {
@@ -182,18 +182,18 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   right: 7px;
   bottom: 7px;
   padding: 3px 5px;
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.53rem;
   font-weight: 700;
-  background: #f2f4f6;
+  background: #f2ede0;
   border: 0;
   border-radius: 6px;
 }
 
 .detail-button:hover,
 .detail-button:focus-visible {
-  color: #1b64da;
-  background: #e8f3ff;
+  color: #80510d;
+  background: #fff1c9;
   outline: none;
 }
 
@@ -205,7 +205,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   min-height: 0;
   padding: 14px 15px 13px;
   overflow: hidden;
-  background: linear-gradient(145deg, #fff 20%, #f7fbff 100%);
+  background: linear-gradient(145deg, #fff 20%, #fffbf0 100%);
   border-radius: 18px;
 }
 
@@ -222,11 +222,11 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 }
 
 .weather-mini-card.is-large.is-hot::before {
-  background: radial-gradient(circle, #ffe4d2, rgba(255, 228, 210, 0));
+  background: radial-gradient(circle, #ffe0bc, rgba(255, 224, 188, 0));
 }
 
 .weather-mini-card.is-large.is-cool::before {
-  background: radial-gradient(circle, #dcecff, rgba(220, 236, 255, 0));
+  background: radial-gradient(circle, #e4ecd4, rgba(228, 236, 212, 0));
 }
 
 .large-card-heading,
@@ -244,7 +244,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 }
 
 .large-card-heading small {
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.48rem;
   font-weight: 900;
   letter-spacing: 0.09em;
@@ -253,7 +253,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 .large-card-heading strong {
   overflow: hidden;
   margin-top: 2px;
-  color: #344054;
+  color: #354133;
   font-size: 0.78rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -269,7 +269,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(222, 230, 238, 0.85);
   border-radius: 11px;
-  box-shadow: 0 6px 15px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 6px 15px rgba(87, 65, 26, 0.09);
 }
 
 .large-weather-main {
@@ -305,7 +305,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 
 .large-weather-main small {
   margin-top: 3px;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.52rem;
 }
 
@@ -328,7 +328,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   align-items: center;
   gap: 4px;
   padding: 5px 7px;
-  color: #4e5968;
+  color: #596052;
   font-size: 0.55rem;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid #e3e9ef;
@@ -336,7 +336,7 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 }
 
 .large-card-footer .detail-button i {
-  color: #3182f6;
+  color: #a86412;
   font-style: normal;
 }
 </style>

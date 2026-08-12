@@ -1,5 +1,5 @@
 <script setup>
-// 과제 1 전용 SVG 지도 컴포넌트
+// 완성형 날씨 화면에서 재사용하는 SVG 지역 지도 컴포넌트
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -276,25 +276,33 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 .map-content :deep(path[id]) {
   cursor: pointer;
-  fill: #dce8f5;
-  stroke: #fff;
-  stroke-width: 1.8px;
+  fill: #f2df9f;
+  stroke: #fffaf0;
+  stroke-width: 2.1px;
   transform-box: fill-box;
   transform-origin: center;
   transition: fill 160ms ease, filter 160ms ease, transform 160ms ease;
 }
 
+.map-content :deep(path[id]:nth-of-type(3n + 2)) {
+  fill: #ead79b;
+}
+
+.map-content :deep(path[id]:nth-of-type(3n)) {
+  fill: #e2d4a4;
+}
+
 .map-content :deep(path[id]:hover),
 .map-content :deep(path[id]:focus-visible) {
-  fill: #85b7fb;
-  filter: drop-shadow(0 7px 10px rgba(49, 130, 246, 0.22));
+  fill: #e9b93f;
+  filter: drop-shadow(0 8px 11px rgba(162, 103, 17, 0.24));
   outline: none;
   transform: scale(1.025);
 }
 
 .map-content :deep(path[id].is-active) {
-  fill: #3182f6;
-  filter: drop-shadow(0 9px 13px rgba(49, 130, 246, 0.3));
+  fill: #c98418;
+  filter: drop-shadow(0 10px 14px rgba(122, 78, 12, 0.3));
 }
 
 .restaurant-marker {
@@ -307,12 +315,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   color: #fff;
   font-size: 0.64rem;
   font-weight: 900;
-  background: #ff8a3d;
-  border: 2px solid #fff;
+  background: #40513b;
+  border: 2px solid #fffaf0;
   border-radius: 999px;
   pointer-events: none;
   transform: translate(-50%, -50%);
-  box-shadow: 0 5px 12px rgba(220, 95, 19, 0.3);
+  box-shadow: 0 5px 12px rgba(55, 72, 49, 0.32);
 }
 
 .map-tooltip {
@@ -323,27 +331,27 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
   gap: 3px 9px;
   min-width: 170px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid rgba(49, 130, 246, 0.16);
+  background: rgba(255, 251, 239, 0.98);
+  border: 1px solid rgba(201, 132, 24, 0.25);
   border-radius: 13px;
   pointer-events: none;
   transform: translate(-50%, -100%);
-  box-shadow: 0 12px 30px rgba(0, 27, 55, 0.16);
+  box-shadow: 0 12px 30px rgba(82, 61, 22, 0.17);
 }
 
 .map-tooltip strong {
-  color: #253448;
+  color: #354133;
   font-size: 0.78rem;
 }
 
 .map-tooltip span {
-  color: #4e5968;
+  color: #596052;
   font-size: 0.72rem;
 }
 
 .map-tooltip small {
   grid-column: 1 / -1;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.64rem;
 }
 

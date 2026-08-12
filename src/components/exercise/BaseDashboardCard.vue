@@ -31,10 +31,10 @@ defineProps({
   min-height: 0;
   padding: 22px 24px 24px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(220, 228, 237, 0.9);
+  background: rgba(255, 252, 244, 0.96);
+  border-color: rgba(226, 214, 187, 0.92);
   border-radius: 22px;
-  box-shadow: 0 12px 38px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 12px 38px rgba(87, 65, 26, 0.09);
 }
 
 @media (min-width: 1200px) and (max-height: 780px) {

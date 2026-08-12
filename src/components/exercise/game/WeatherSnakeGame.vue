@@ -218,10 +218,10 @@ onBeforeUnmount(() => {
   width: min(100%, 620px);
   min-height: 0;
   overflow: hidden;
-  background: #26364a;
+  background: #40513b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(27, 45, 68, 0.2);
+  box-shadow: 0 20px 50px rgba(45, 56, 43, 0.24);
 }
 
 .game-details {
@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   min-height: 54px;
   padding: 0 22px;
-  color: #aebed2;
+  color: #d5dcc7;
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  background: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px), #172437;
+  background: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px), #253124;
   background-size: calc(100% / 30) calc(100% / 30);
   grid-template: repeat(30, 1fr) / repeat(30, 1fr);
   border-radius: 16px;
@@ -297,7 +297,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   padding: 22px;
   text-align: center;
-  background: rgba(16, 29, 45, 0.78);
+  background: rgba(32, 42, 30, 0.82);
   backdrop-filter: blur(8px);
   inset: 0;
 }
@@ -315,7 +315,7 @@ onBeforeUnmount(() => {
 
 .game-overlay p {
   margin: 7px 0 18px;
-  color: #b9c8da;
+  color: #d5dcc7;
   font-size: 0.72rem;
 }
 
@@ -325,7 +325,7 @@ onBeforeUnmount(() => {
   color: #fff;
   font-size: 0.72rem;
   font-weight: 850;
-  background: #3182f6;
+  background: #a86412;
   border: 0;
   border-radius: 12px;
 }
@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
 }
 
 .controls button {
-  color: #b8c6dc;
+  color: #d5dcc7;
   font-size: 1.05rem;
   font-weight: 800;
   background: transparent;

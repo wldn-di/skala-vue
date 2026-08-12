@@ -63,7 +63,7 @@ defineEmits(['update-query', 'refresh'])
 }
 
 .is-dashboard > label {
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.68rem;
   font-weight: 800;
 }
@@ -74,13 +74,13 @@ defineEmits(['update-query', 'refresh'])
   width: 250px;
   height: 40px;
   padding: 0 9px;
-  background: #f7f9fb;
-  border: 1px solid #dfe5ec;
+  background: #fffaf0;
+  border: 1px solid #e8dcc1;
   border-radius: 10px;
 }
 
 .is-dashboard .search-input span {
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 1rem;
 }
 
@@ -89,7 +89,7 @@ defineEmits(['update-query', 'refresh'])
   min-width: 0;
   height: 100%;
   padding: 0 6px;
-  color: #333d4b;
+  color: #364034;
   font-size: 0.75rem;
   background: transparent;
   border: 0;
@@ -99,12 +99,12 @@ defineEmits(['update-query', 'refresh'])
 .is-dashboard > p {
   min-width: 125px;
   margin: 0;
-  color: #8b95a1;
+  color: #8f9187;
   font-size: 0.68rem;
 }
 
 .is-dashboard strong {
-  color: #3182f6;
+  color: #a86412;
 }
 
 .refresh-button {
@@ -112,14 +112,14 @@ defineEmits(['update-query', 'refresh'])
   place-items: center;
   width: 32px;
   height: 32px;
-  color: #3182f6;
-  background: #eef6ff;
+  color: #40513b;
+  background: #edf1e6;
   border: 0;
   border-radius: 9px;
 }
 
 .refresh-button:disabled {
-  color: #8b95a1;
+  color: #8f9187;
 }
 
 @media (max-width: 680px) {

@@ -19,16 +19,16 @@ const configStore = useConfigStore()
   align-items: center;
   gap: 9px;
   padding: 8px 9px 8px 12px;
-  color: #4e5968;
+  color: #596052;
   font-size: 0.72rem;
   background: rgba(255, 255, 255, 0.96);
-  border: 1px solid #dfe5ec;
+  border: 1px solid #dfd0ae;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(29, 59, 93, 0.14);
+  box-shadow: 0 8px 24px rgba(87, 65, 26, 0.14);
 }
 
 .unit-toggler strong {
-  color: #3182f6;
+  color: #a86412;
 }
 
 .toggle-button {
@@ -36,7 +36,7 @@ const configStore = useConfigStore()
   color: #fff;
   font-size: 0.68rem;
   font-weight: 800;
-  background: #3182f6;
+  background: #40513b;
   border: 0;
   border-radius: 8px;
 }

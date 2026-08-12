@@ -1,6 +1,6 @@
 :root {
-  color: #191f28;
-  background: #f4f7fb;
+  color: #293126;
+  background: #fbf7ec;
   font-family:
     Pretendard,
     'Noto Sans KR',
@@ -11,8 +11,8 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --blue: #3182f6;
-  --orange: #ff8a3d;
+  --blue: #d99a1b;
+  --orange: #d96b43;
 }
 
 * {
@@ -22,7 +22,7 @@
 html {
   min-width: 320px;
   min-height: 100%;
-  background: #f4f7fb;
+  background: #fbf7ec;
 }
 
 body {
@@ -30,9 +30,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 11% 18%, rgba(49, 130, 246, 0.1), transparent 27rem),
-    radial-gradient(circle at 91% 74%, rgba(255, 138, 61, 0.08), transparent 24rem),
-    #f4f7fb;
+    radial-gradient(circle at 10% 12%, rgba(244, 189, 62, 0.2), transparent 28rem),
+    radial-gradient(circle at 91% 72%, rgba(110, 132, 88, 0.13), transparent 25rem),
+    linear-gradient(145deg, #fffaf0 0%, #f6f1e3 100%);
 }
 
 button,

@@ -33,7 +33,7 @@ const weatherList = [
   width: min(900px, calc(100% - 32px));
   margin: 0 auto;
   padding: 64px 0;
-  color: #26364a;
+  color: #40513b;
 }
 
 header {
@@ -42,7 +42,7 @@ header {
 
 header p {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -53,7 +53,7 @@ h1 {
 }
 
 header span {
-  color: #6b7684;
+  color: #70766a;
 }
 
 .weather-grid {
@@ -68,7 +68,7 @@ header span {
   background: #fff;
   border: 1px solid #e3e9ef;
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(29, 59, 93, 0.08);
+  box-shadow: 0 12px 30px rgba(87, 65, 26, 0.09);
 }
 
 .weather-icon {
@@ -90,7 +90,7 @@ h2 {
 
 .weather-card p {
   margin: 5px 0 20px;
-  color: #6b7684;
+  color: #70766a;
 }
 
 .temperature {
@@ -98,7 +98,7 @@ h2 {
   padding: 6px 9px;
   font-size: 0.72rem;
   font-weight: 800;
-  background: #f2f4f6;
+  background: #f2ede0;
   border-radius: 999px;
 }
 
@@ -107,7 +107,7 @@ h2 {
 }
 
 .cool {
-  color: #2774e8;
+  color: #596b47;
 }
 
 @media (max-width: 680px) {

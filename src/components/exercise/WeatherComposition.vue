@@ -58,12 +58,12 @@ watchEffect(() => {
   width: min(900px, calc(100% - 32px));
   margin: 0 auto;
   padding: 54px 0;
-  color: #26364a;
+  color: #40513b;
 }
 
 header p {
   margin: 0;
-  color: #3182f6;
+  color: #a86412;
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -92,12 +92,12 @@ h1 {
   flex: 1;
   min-width: 0;
   padding: 10px;
-  border: 1px solid #dfe5ec;
+  border: 1px solid #dfd0ae;
   border-radius: 8px;
 }
 
 .search-box span {
-  color: #6b7684;
+  color: #70766a;
   font-size: 0.8rem;
 }
 
@@ -134,7 +134,7 @@ h1 {
 }
 
 .cool {
-  color: #2774e8;
+  color: #596b47;
 }
 
 .empty {
