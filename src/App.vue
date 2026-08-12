@@ -1,85 +1,42 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
   <RouterView />
+
+  <nav class="app-navigation" aria-label="과제 4 기본 페이지">
+    <RouterLink to="/">홈</RouterLink>
+    <RouterLink to="/about">소개</RouterLink>
+  </nav>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-navigation {
+  position: fixed;
+  z-index: 40;
+  bottom: 18px;
+  left: 18px;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #dfe5ec;
+  border-radius: 11px;
+  box-shadow: 0 8px 24px rgba(29, 59, 93, 0.12);
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.app-navigation a {
+  padding: 7px 10px;
+  color: #6b7684;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 7px;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.app-navigation a.router-link-exact-active {
+  color: #1b64da;
+  background: #e8f3ff;
 }
 </style>

@@ -1,68 +1,164 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+import { weatherList } from '../components/exercise/weatherMockData'
+import { useConfigStore } from '../stores/configStore'
 
 const route = useRoute()
 const router = useRouter()
+const configStore = useConfigStore()
 
-const mockDetails = {
-  city_01: { name: '대한민국 서울특별시', temp: 28, status: '맑음', humidity: '55%', wind: '2.5m/s' },
-  city_02: { name: '경기도 수원시 영통구', temp: 24, status: '비', humidity: '85%', wind: '4.1m/s' },
-  city_03: { name: '부산광역시 해운대구', temp: 26, status: '구름', humidity: '65%', wind: '5.0m/s' },
-}
-
-const cityData = ref(null)
-
-onMounted(() => {
-  const id = route.params.cityId
-  if (mockDetails[id]) {
-    cityData.value = mockDetails[id]
-  }
+const cityData = computed(() => weatherList.find((item) => item.id === route.params.cityId) ?? null)
+const convertTemp = (temp) => (configStore.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp)
+const displayTemp = computed(() => {
+  if (!cityData.value) return null
+  return convertTemp(cityData.value.temp)
 })
 </script>
 
 <template>
-  <div class="detail-container">
-    <h3>📊 지역별 상세 기상 관측 정보</h3>
-    <hr />
+  <main class="detail-page">
+    <section v-if="cityData" class="detail-card">
+      <header>
+        <span aria-hidden="true">{{ cityData.emoji }}</span>
+        <div>
+          <p>REGION WEATHER DETAIL</p>
+          <h1>{{ cityData.fullName }}</h1>
+        </div>
+      </header>
 
-    <div v-if="cityData" class="info-card">
-      <h4>📍 지정 지역: {{ cityData.name }}</h4>
-      <p>
-        실시간 기온: <strong>{{ cityData.temp }}°C</strong>
-      </p>
-      <p>기상 현황: {{ cityData.status }}</p>
-      <p>대기 습도: {{ cityData.humidity }}</p>
-      <p>현재 풍속: {{ cityData.wind }}</p>
-    </div>
-    <div v-else>
-      <p>해당 지역의 상세 데이터 장부가 존재하지 않습니다.</p>
-    </div>
+      <div class="temperature">
+        <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
+        <span>{{ cityData.status }}</span>
+      </div>
 
-    <button @click="router.push('/')" class="back-btn">← 메인 대시보드로 돌아가기</button>
-  </div>
+      <dl>
+        <div><dt>최고 / 최저</dt><dd>{{ convertTemp(cityData.high) }}{{ configStore.unitSymbol }} / {{ convertTemp(cityData.low) }}{{ configStore.unitSymbol }}</dd></div>
+        <div><dt>습도</dt><dd>{{ cityData.humidity }}%</dd></div>
+        <div><dt>강수 확률</dt><dd>{{ cityData.rainChance }}%</dd></div>
+        <div><dt>풍속</dt><dd>{{ cityData.wind }}m/s</dd></div>
+      </dl>
+    </section>
+
+    <section v-else class="detail-card empty">
+      <span aria-hidden="true">🌤️</span>
+      <h1>도시 정보를 찾을 수 없습니다.</h1>
+      <p>전국날씨 목록에서 존재하는 지역을 선택해 주세요.</p>
+    </section>
+
+    <button class="back-button" type="button" @click="router.back()">← 이전 화면으로 돌아가기</button>
+  </main>
 </template>
 
 <style scoped>
-.detail-container {
+.detail-page {
+  width: min(720px, calc(100% - 32px));
   margin: 0 auto;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 70px 0;
+  color: #26364a;
 }
-.info-card {
-  background: #f1f2f6;
-  padding: 15px;
-  border-radius: 6px;
-  margin: 15px 0;
+
+.detail-card {
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #dfe5ec;
+  border-radius: 24px;
+  box-shadow: 0 14px 40px rgba(29, 59, 93, 0.1);
 }
-.back-btn {
-  padding: 8px 12px;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+header > span {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  font-size: 2rem;
+  background: #eef6ff;
+  border-radius: 18px;
+}
+
+header p {
+  margin: 0;
+  color: #3182f6;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+h1 {
+  margin: 5px 0 0;
+}
+
+.temperature {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 34px 0;
+}
+
+.temperature strong {
+  font-size: 3.5rem;
+  font-weight: 450;
+}
+
+.temperature span {
+  color: #6b7684;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 0;
+}
+
+dl div {
+  padding: 14px;
+  background: #f7f9fb;
+  border-radius: 12px;
+}
+
+dt {
+  color: #8b95a1;
+  font-size: 0.7rem;
+}
+
+dd {
+  margin: 5px 0 0;
+  font-weight: 800;
+}
+
+.empty {
+  text-align: center;
+}
+
+.empty > span {
+  font-size: 3rem;
+}
+
+.empty p {
+  color: #6b7684;
+}
+
+.back-button {
+  padding: 10px 14px;
+  margin-top: 16px;
+  color: #fff;
+  font-weight: 800;
+  background: #26364a;
+  border: 0;
+  border-radius: 10px;
+}
+
+@media (max-width: 560px) {
+  dl {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
