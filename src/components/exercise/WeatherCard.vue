@@ -46,13 +46,9 @@ const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
       'is-hot': cityItem.temp >= 25,
       'is-cool': cityItem.temp < 25,
     }"
-    role="button"
-    tabindex="0"
-    :aria-label="`${cityItem.name} 날씨 선택`"
-    @click="emit('select-card', cityItem)"
-    @keydown.enter="emit('select-card', cityItem)"
-    @keydown.space.prevent="emit('select-card', cityItem)"
   >
+    <button class="card-select-button" type="button" :aria-label="`${cityItem.name} 날씨 선택`" @click="emit('select-card', cityItem)"></button>
+
     <template v-if="size === 'large'">
       <img v-if="cityImageUrl" class="city-photo" :src="cityImageUrl" alt="" aria-hidden="true" loading="lazy" width="550" height="316" />
       <div class="city-photo-label" aria-hidden="true">
@@ -122,11 +118,27 @@ const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
 }
 
 .weather-mini-card:hover,
-.weather-mini-card:focus-visible {
+.weather-mini-card:focus-within {
   border-color: #dfb64b;
   outline: none;
   transform: translateY(-1px);
   box-shadow: 0 7px 16px rgba(146, 98, 23, 0.13);
+}
+
+.card-select-button {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.card-select-button:focus-visible {
+  outline: 3px solid rgba(168, 100, 18, 0.42);
+  outline-offset: 2px;
 }
 
 .weather-mini-card.is-selected {
@@ -191,6 +203,7 @@ const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
 
 .detail-button {
   position: absolute;
+  z-index: 5;
   right: 7px;
   bottom: 7px;
   padding: 3px 5px;
@@ -289,6 +302,7 @@ const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
   background: rgba(28, 34, 28, 0.68);
   border-radius: 8px;
   backdrop-filter: blur(3px);
+  pointer-events: none;
   transition:
     opacity 180ms ease,
     transform 220ms ease;
@@ -308,10 +322,15 @@ const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
   grid-template-rows: auto minmax(0, 1fr) auto;
   min-height: 0;
   opacity: 0;
+  pointer-events: none;
   transform: translateY(7px);
   transition:
     opacity 200ms ease,
     transform 240ms ease;
+}
+
+.large-card-content .detail-button {
+  pointer-events: auto;
 }
 
 .weather-mini-card.is-large:hover .city-photo,

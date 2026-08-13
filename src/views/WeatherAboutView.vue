@@ -14,11 +14,11 @@ const handleGoHome = () => {
     <hr />
 
     <div class="description-box">
-      <p>본 앱은 <strong>Vue 3</strong> 및 <strong>Vue Router 4</strong> 기반 제작된 실습용 기상 관측 대시보드 시스템입니다.</p>
+      <p>본 앱은 <strong>Vue 3</strong> 및 <strong>Vue Router 5</strong> 기반으로 제작된 실습용 기상 관측 대시보드 시스템입니다.</p>
       <ul>
         <li><code>components/exercise/</code> 폴더 내부의 독립 부품 연동</li>
         <li>클라이언트 사이드 라우팅을 통한 새로고침 없는 화면 전환</li>
-        <li>URL 쿼리 스트링 매핑을 활용한 실시간 검색 상태 동기화</li>
+        <li>동적 경로를 활용한 지역별 상세 날씨 화면 연결</li>
       </ul>
     </div>
 
