@@ -9,12 +9,12 @@
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="./public/screenshots/main_seoul_weather.png" alt="서울 현재 날씨와 지역 음식 화면" />
+      <img src="./public/screenshots/main_ulsan_weather.png" alt="울산 현재 날씨와 지역 음식 화면" />
       <br />
-      <sub>서울 현재 날씨와 대표 음식</sub>
+      <sub>울산 현재 날씨와 대표 음식</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/main_seoul_detail.png" alt="서울 구군별 맛집 등록 화면" />
+      <img src="./public/screenshots/main_ulsan_detail.png" alt="울산 구군별 맛집 등록 화면" />
       <br />
       <sub>구·군별 맛집 지도와 맛집 등록</sub>
     </td>
