@@ -1,6 +1,26 @@
 <script setup>
 import { computed } from 'vue'
 
+const CITY_IMAGE_BY_ID = {
+  seoul: 'seoul.png',
+  busan: 'busan.png',
+  daegu: 'daegu.png',
+  incheon: 'incheon.png',
+  gwangju: 'gyangju.png',
+  daejeon: 'daejeun.png',
+  ulsan: 'ulsan.png',
+  sejong: 'sejong.png',
+  gyeonggi: 'gyeongji.png',
+  gangwon: 'gangwon.png',
+  chungbuk: 'choongcheong_north.png',
+  chungnam: 'choongcheong_south.png',
+  jeonbuk: 'jeonbuk.png',
+  jeonnam: 'jeonnam.png',
+  gyeongbuk: 'gyeongsang_north.png',
+  gyeongnam: 'gyeongsang_south.png',
+  jeju: 'jeju.png',
+}
+
 // 과제 3과 최종 화면에서 재사용하는 날씨 카드
 const props = defineProps({
   cityItem: {
@@ -32,6 +52,10 @@ const emit = defineEmits(['select-card', 'click-detail'])
 const convertTemp = (temp) => (props.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp)
 const displayTemp = computed(() => convertTemp(props.cityItem.temp))
 const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fahrenheit' ? '℉' : '℃'))
+const cityImageUrl = computed(() => {
+  const fileName = CITY_IMAGE_BY_ID[props.cityItem.id]
+  return fileName ? `/cities/${fileName}` : ''
+})
 </script>
 
 <template>
@@ -51,29 +75,38 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
     @keydown.space.prevent="emit('select-card', cityItem)"
   >
     <template v-if="size === 'large'">
-      <header class="large-card-heading">
-        <div>
-          <small>REGION WEATHER · {{ cityItem.dataSource === 'live' ? 'LIVE' : 'MOCK' }}</small>
-          <strong>{{ cityItem.fullName || cityItem.name }}</strong>
-        </div>
-        <span class="large-weather-icon" aria-hidden="true">{{ cityItem.emoji || '🌤️' }}</span>
-      </header>
-
-      <div class="large-weather-main">
-        <b>{{ displayTemp }}<sup>{{ displayUnitSymbol }}</sup></b>
-        <div>
-          <strong>{{ cityItem.status }}</strong>
-          <small v-if="cityItem.dataSource === 'live'">관측 범위 {{ convertTemp(cityItem.low) }}{{ displayUnitSymbol }} ~ {{ convertTemp(cityItem.high) }}{{ displayUnitSymbol }}</small>
-          <small v-else>최고 {{ convertTemp(cityItem.high) }}{{ displayUnitSymbol }} · 최저 {{ convertTemp(cityItem.low) }}{{ displayUnitSymbol }}</small>
-        </div>
+      <img v-if="cityImageUrl" class="city-photo" :src="cityImageUrl" alt="" aria-hidden="true" loading="lazy" width="550" height="316" />
+      <div class="city-photo-label" aria-hidden="true">
+        <strong>{{ cityItem.fullName || cityItem.name }}</strong>
       </div>
 
-      <footer class="large-card-footer">
-        <span v-if="cityItem.temp >= 25" class="temperature-label hot"> 🔥 더움 (25도 이상) </span>
-        <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+      <div class="large-card-content">
+        <header class="large-card-heading">
+          <div>
+            <small>REGION WEATHER · {{ cityItem.dataSource === 'live' ? 'LIVE' : 'MOCK' }}</small>
+            <strong>{{ cityItem.fullName || cityItem.name }}</strong>
+          </div>
+          <span class="large-weather-icon" aria-hidden="true">{{ cityItem.emoji || '🌤️' }}</span>
+        </header>
 
-        <button class="detail-button" type="button" :aria-label="`${cityItem.name} 날씨 상세보기`" @click.stop="emit('click-detail', cityItem)">상세보기 <i aria-hidden="true">→</i></button>
-      </footer>
+        <div class="large-weather-main">
+          <b
+            >{{ displayTemp }}<sup>{{ displayUnitSymbol }}</sup></b
+          >
+          <div>
+            <strong>{{ cityItem.status }}</strong>
+            <small v-if="cityItem.dataSource === 'live'">관측 범위 {{ convertTemp(cityItem.low) }}{{ displayUnitSymbol }} ~ {{ convertTemp(cityItem.high) }}{{ displayUnitSymbol }}</small>
+            <small v-else>최고 {{ convertTemp(cityItem.high) }}{{ displayUnitSymbol }} · 최저 {{ convertTemp(cityItem.low) }}{{ displayUnitSymbol }}</small>
+          </div>
+        </div>
+
+        <footer class="large-card-footer">
+          <span v-if="cityItem.temp >= 25" class="temperature-label hot"> 🔥 더움 (25도 이상) </span>
+          <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+
+          <button class="detail-button" type="button" :aria-label="`${cityItem.name} 날씨 상세보기`" @click.stop="emit('click-detail', cityItem)">상세보기 <i aria-hidden="true">→</i></button>
+        </footer>
+      </div>
     </template>
 
     <template v-else>
@@ -205,20 +238,44 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   min-height: 0;
   padding: 14px 15px 13px;
   overflow: hidden;
-  background: linear-gradient(145deg, #fff 20%, #fffbf0 100%);
+  background: #354133;
+  border: 0;
   border-radius: 18px;
+}
+
+.weather-mini-card.is-large:hover,
+.weather-mini-card.is-large:focus-visible,
+.weather-mini-card.is-large:focus-within,
+.weather-mini-card.is-large.is-selected {
+  border: 0;
+  outline: none;
+  transform: none;
+  box-shadow: none;
 }
 
 .weather-mini-card.is-large::before {
   position: absolute;
-  z-index: -1;
+  z-index: 2;
   width: 110px;
   height: 110px;
   border-radius: 50%;
   content: '';
-  opacity: 0.55;
+  opacity: 0;
   top: -45px;
   right: -35px;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.weather-mini-card.is-large::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.68) 20%, rgba(255, 251, 240, 0.62) 100%);
+  content: '';
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
 }
 
 .weather-mini-card.is-large.is-hot::before {
@@ -227,6 +284,94 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 
 .weather-mini-card.is-large.is-cool::before {
   background: radial-gradient(circle, #e4ecd4, rgba(228, 236, 212, 0));
+}
+
+.city-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.04) contrast(1.02);
+  transform: scale(1.01);
+  transition:
+    filter 260ms ease,
+    transform 320ms ease;
+}
+
+.city-photo-label {
+  position: absolute;
+  z-index: 3;
+  top: 11px;
+  left: 12px;
+  padding: 7px 9px;
+  color: #fff;
+  background: rgba(28, 34, 28, 0.68);
+  border-radius: 8px;
+  backdrop-filter: blur(3px);
+  transition:
+    opacity 180ms ease,
+    transform 220ms ease;
+}
+
+.city-photo-label strong {
+  display: block;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.large-card-content {
+  position: absolute;
+  z-index: 3;
+  inset: 14px 15px 13px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity 200ms ease,
+    transform 240ms ease;
+}
+
+.weather-mini-card.is-large:hover .city-photo,
+.weather-mini-card.is-large:focus-visible .city-photo,
+.weather-mini-card.is-large:focus-within .city-photo,
+.weather-mini-card.is-large.is-selected .city-photo {
+  filter: blur(2px) brightness(0.82) saturate(0.88);
+  transform: scale(1.06);
+}
+
+.weather-mini-card.is-large:hover::after,
+.weather-mini-card.is-large:focus-visible::after,
+.weather-mini-card.is-large:focus-within::after,
+.weather-mini-card.is-large.is-selected::after {
+  opacity: 0.66;
+}
+
+.weather-mini-card.is-large:hover::before,
+.weather-mini-card.is-large:focus-visible::before,
+.weather-mini-card.is-large:focus-within::before,
+.weather-mini-card.is-large.is-selected::before {
+  opacity: 0.55;
+}
+
+.weather-mini-card.is-large:hover .city-photo-label,
+.weather-mini-card.is-large:focus-visible .city-photo-label,
+.weather-mini-card.is-large:focus-within .city-photo-label,
+.weather-mini-card.is-large.is-selected .city-photo-label {
+  opacity: 0;
+  transform: translateY(5px);
+  pointer-events: none;
+}
+
+.weather-mini-card.is-large:hover .large-card-content,
+.weather-mini-card.is-large:focus-visible .large-card-content,
+.weather-mini-card.is-large:focus-within .large-card-content,
+.weather-mini-card.is-large.is-selected .large-card-content {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .large-card-heading,
@@ -305,21 +450,25 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
 
 .large-weather-main small {
   margin-top: 3px;
-  color: #8f9187;
+  color: #191f28;
   font-size: 0.52rem;
 }
 
 .large-card-footer {
+  align-self: end;
   min-height: 25px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.68);
+  border-radius: 7px;
+  backdrop-filter: blur(4px);
 }
 
 .large-card-footer .temperature-label {
   width: fit-content;
   margin: 0;
-  padding: 5px 7px;
+  padding: 0;
   font-size: 0.55rem;
-  background: rgba(246, 248, 250, 0.9);
-  border-radius: 999px;
+  background: transparent;
 }
 
 .large-card-footer .detail-button {
@@ -327,16 +476,47 @@ const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fa
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 7px;
+  padding: 0;
   color: #596052;
   font-size: 0.55rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e3e9ef;
-  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.large-card-footer .detail-button:hover,
+.large-card-footer .detail-button:focus-visible {
+  color: #80510d;
+  background: transparent;
+  outline: none;
 }
 
 .large-card-footer .detail-button i {
   color: #a86412;
   font-style: normal;
+}
+
+@media (hover: none) {
+  .weather-mini-card.is-large .city-photo {
+    filter: blur(1.5px) brightness(0.82) saturate(0.88);
+    transform: scale(1.05);
+  }
+
+  .weather-mini-card.is-large::after {
+    opacity: 0.66;
+  }
+
+  .weather-mini-card.is-large::before {
+    opacity: 0.55;
+  }
+
+  .weather-mini-card.is-large .city-photo-label {
+    display: none;
+  }
+
+  .weather-mini-card.is-large .large-card-content {
+    opacity: 1;
+    transform: none;
+  }
 }
 </style>
