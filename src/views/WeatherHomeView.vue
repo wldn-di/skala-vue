@@ -105,7 +105,7 @@ const weatherApiStatusLabel = computed(() => {
   return '날씨 API 연결 대기'
 })
 const isDrilled = computed(() => Boolean(selectedWeather.value))
-const mapFile = computed(() => (selectedWeather.value ? `${selectedWeather.value.mapName}_시군구_경계.svg` : '전국_시도_경계.svg'))
+const mapFile = computed(() => (selectedWeather.value ? `${selectedWeather.value.id}.svg` : 'korea.svg'))
 const mapRegions = computed(() => (isDrilled.value ? [] : weatherList.value))
 const mapActiveName = computed(() => (isDrilled.value ? selectedDistrict.value : (selectedWeather.value?.mapName ?? '')))
 
@@ -176,6 +176,9 @@ const returnToNational = () => {
 }
 
 const showDetail = (weather) => {
+  console.log(
+    `[상세보기] ${weather.name} · ${weather.status} · 현재 ${weather.temp}℃ · 최저 ${weather.low}℃ · 최고 ${weather.high}℃`
+  )
   router.push(`/weather/${weather.id}`)
 }
 

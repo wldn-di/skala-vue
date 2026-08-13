@@ -5,7 +5,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 const props = defineProps({
   file: {
     type: String,
-    default: '전국_시도_경계.svg',
+    default: 'korea.svg',
   },
   activeName: {
     type: String,
