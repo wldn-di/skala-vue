@@ -14,31 +14,31 @@
       <sub>울산 현재 날씨와 대표 음식</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/main_ulsan_detail.png" alt="울산 구군별 맛집 등록 화면" />
+      <img src="./public/screenshots/ulsan_recommend.png" alt="울산 구군별 맛집 등록 화면" />
       <br />
       <sub>구·군별 맛집 지도와 맛집 등록</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="./public/screenshots/weather_list_2.png" alt="전국 날씨 목록 화면" />
+      <img src="./public/screenshots/all_cities.png" alt="전국 날씨 목록 화면" />
       <br />
       <sub>전국 17개 시·도 날씨 목록</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/weather_today_i_eat_2.png" alt="날씨 기반 저녁 메뉴 추천 화면" />
+      <img src="./public/screenshots/dinner_recommend.png" alt="날씨 기반 저녁 메뉴 추천 화면" />
       <br />
       <sub>날씨 기반 저녁 메뉴 추천</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="./public/screenshots/game_weather_2.png" alt="날씨 푸드 스네이크 게임 화면" />
+      <img src="./public/screenshots/food_snake.png" alt="날씨 푸드 스네이크 게임 화면" />
       <br />
       <sub>날씨 푸드 스네이크 게임</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/game_ranking_weather_2.png" alt="게임 기록과 지역 랭킹 화면" />
+      <img src="./public/screenshots/ranking.png" alt="게임 기록과 지역 랭킹 화면" />
       <br />
       <sub>내 게임 기록과 지역 랭킹</sub>
     </td>
