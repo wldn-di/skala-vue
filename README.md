@@ -45,53 +45,104 @@
   </tr>
 </table>
 
+## 과제 평가 한눈에 보기
+
+> 제출 과제는 **과제 1~5**입니다. 아래 링크에서 각 단계의 결과를 독립적으로 실행할 수 있으며, `/`는 과제 5까지 누적 적용한 최종 화면입니다.
+
+| 구분      | 실행 URL                                        | 평가 핵심                                       | 대표 결과 파일                                                                                       |
+| --------- | ----------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 과제 1    | [`/practice1`](http://localhost:3000/practice1) | Vue 디렉티브와 Mock 배열 렌더링                 | [`src/components/exercise/WeatherMockup.vue`](./src/components/exercise/WeatherMockup.vue)           |
+| 과제 2    | [`/practice2`](http://localhost:3000/practice2) | Composition API 기반 검색·선택 상태 관리        | [`src/components/exercise/WeatherComposition.vue`](./src/components/exercise/WeatherComposition.vue) |
+| 과제 3    | [`/practice3`](http://localhost:3000/practice3) | 컴포넌트 분리, props/emits, slot                | [`src/components/exercise/WeatherParent.vue`](./src/components/exercise/WeatherParent.vue)           |
+| 과제 4    | [`/practice4`](http://localhost:3000/practice4) | Vue Router, View 분리, 동적 경로와 404 처리     | [`src/views/WeatherHomeView.vue`](./src/views/WeatherHomeView.vue)                                   |
+| 과제 5    | [`/practice5`](http://localhost:3000/practice5) | Pinia state/getter/action과 섭씨·화씨 단위 전환 | [`src/views/PracticeFiveView.vue`](./src/views/PracticeFiveView.vue)                                 |
+| 최종 화면 | [`/`](http://localhost:3000/)                   | 과제 1~5와 추가 기능을 통합한 서비스            | [`src/views/PracticeFiveView.vue`](./src/views/PracticeFiveView.vue)                                 |
+
+개발 서버 실행 후 위 URL로 접속합니다. 평가용 경로는 최종 서비스의 화면 구성을 방해하지 않도록 상단 메뉴에는 노출하지 않고 Router에 직접 연결했습니다.
+
+## 과제 1 — Vue 기본 문법과 Weather Mockup
+
+- **실행 경로:** [`/practice1`](http://localhost:3000/practice1)
+- **핵심 기능:** 세 도시의 Mock 날씨 데이터를 카드 목록으로 출력하고, 기온이 25℃ 이상인지에 따라 상태 문구를 구분합니다.
+- **확인할 내용:** 배열 렌더링, 고유 key, 조건부 렌더링, 데이터 보간, 반응형 카드 레이아웃을 한 파일에서 확인할 수 있습니다.
+
+| 해당 파일                                                                                  | 역할과 구현 근거                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/components/exercise/WeatherMockup.vue`](./src/components/exercise/WeatherMockup.vue) | `weatherList` Mock 배열을 정의하고 `v-for`와 `:key="item.id"`로 반복 렌더링합니다. `v-if`/`v-else`로 25℃ 이상은 `더움`, 미만은 `선선함`으로 표시하며 날씨 아이콘과 모바일 1열 레이아웃을 적용합니다. |
+| [`src/router/index.js`](./src/router/index.js)                                             | `/practice1` 요청을 `WeatherMockup.vue`에 지연 로딩으로 연결합니다.                                                                                                                                  |
+
+## 과제 2 — Composition API 기반 날씨 검색
+
+- **실행 경로:** [`/practice2`](http://localhost:3000/practice2)
+- **핵심 기능:** 도시 검색어와 선택 상태를 반응형으로 관리하고, 검색 조건에 맞는 날씨 카드만 실시간으로 표시합니다.
+- **확인할 내용:** `ref`, `computed`, `watch`, `watchEffect`가 각각 어떤 상태와 동작을 담당하는지 확인할 수 있습니다.
+
+| 해당 파일                                                                                            | 역할과 구현 근거                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/components/exercise/WeatherComposition.vue`](./src/components/exercise/WeatherComposition.vue) | `weatherList`, `searchQuery`, `selectedCityInfo`를 `ref`로 관리합니다. `computed`로 검색 목록을 만들고, `watch`로 선택 문구를 감시하며, `watchEffect`로 현재 검색어 변화를 추적합니다. 카드 선택 상태와 검색 결과 없음 UI도 함께 구현합니다. |
+| [`src/router/index.js`](./src/router/index.js)                                                       | `/practice2` 요청을 `WeatherComposition.vue`에 지연 로딩으로 연결합니다.                                                                                                                                                                     |
+
+## 과제 3 — 컴포넌트 분리와 부모·자식 통신
+
+- **실행 경로:** [`/practice3`](http://localhost:3000/practice3)
+- **핵심 기능:** 과제 2의 검색·선택 화면을 역할별 컴포넌트로 분리하고 부모가 상태와 비즈니스 로직을 소유하도록 구성했습니다.
+- **확인할 내용:** props로 데이터를 내리고 emits로 이벤트를 올리는 흐름, 공통 slot 컨테이너, 컴포넌트별 scoped style을 확인할 수 있습니다.
+
+| 해당 파일                                                                                          | 역할과 구현 근거                                                                                                                 |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/components/exercise/WeatherParent.vue`](./src/components/exercise/WeatherParent.vue)         | 검색어, 필터 결과, 선택 상태와 이벤트 처리 함수를 소유하고 아래 자식 컴포넌트를 조립하는 과제 3 진입 화면입니다.                 |
+| [`src/components/exercise/BaseDashboardCard.vue`](./src/components/exercise/BaseDashboardCard.vue) | 기본 slot으로 검색 영역과 날씨 목록을 감싸는 재사용 카드 레이아웃입니다.                                                         |
+| [`src/components/exercise/SearchBar.vue`](./src/components/exercise/SearchBar.vue)                 | `currentQuery` prop을 받고 `update-query` emit으로 입력값을 부모에 전달합니다. Element Plus Input을 실제 검색 UI에 적용합니다.   |
+| [`src/components/exercise/WeatherCard.vue`](./src/components/exercise/WeatherCard.vue)             | `cityItem` prop을 표시하고 `select-card`, `click-detail` 이벤트를 부모에 전달합니다. 과제 5의 온도 단위 표시에서도 재사용됩니다. |
+| [`src/components/exercise/WeatherStatusBar.vue`](./src/components/exercise/WeatherStatusBar.vue)   | 부모가 전달한 선택 상태 문구를 Element Plus Alert로 표시하는 추가 분리 컴포넌트입니다.                                           |
+| [`src/router/index.js`](./src/router/index.js)                                                     | `/practice3` 요청을 `WeatherParent.vue`에 지연 로딩으로 연결합니다.                                                              |
+
+```text
+WeatherParent.vue
+├── BaseDashboardCard.vue
+│   ├── SearchBar.vue       # currentQuery prop / update-query emit
+│   └── WeatherCard.vue     # cityItem prop / select-card·click-detail emits
+└── WeatherStatusBar.vue    # message prop으로 선택 상태 표시
+```
+
+## 과제 4 — Vue Router 기반 화면 구조
+
+- **실행 경로:** [`/practice4`](http://localhost:3000/practice4)
+- **추가 검증 경로:** [`/about`](http://localhost:3000/about), [`/weather/seoul`](http://localhost:3000/weather/seoul), 존재하지 않는 임의 주소
+- **핵심 기능:** 앱을 View 단위로 분리하고 정적 경로, 동적 지역 상세 경로, 지연 로딩, Catch-all 404 처리를 실제 Router에 연결했습니다.
+- **확인할 내용:** `/practice4`에서는 과제 3의 재사용 컴포넌트를 포함한 통합 화면이 기본 섭씨 단위로 실행됩니다.
+
+| 해당 파일                                                              | 역할과 구현 근거                                                                                                                                    |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/main.js`](./src/main.js)                                         | 실제 앱 진입점에서 Router 인스턴스를 `.use(router)`로 전역 주입합니다.                                                                              |
+| [`src/App.vue`](./src/App.vue)                                         | `<RouterView />`에 현재 View를 출력하고 `<RouterLink>`로 홈과 소개 화면을 이동합니다.                                                               |
+| [`src/router/index.js`](./src/router/index.js)                         | `/`, `/practice1`~`/practice5`, `/about`, `/weather/:cityId`, Catch-all 경로를 정의하고 모든 라우트 컴포넌트를 함수형 `import()`로 지연 로딩합니다. |
+| [`src/views/WeatherHomeView.vue`](./src/views/WeatherHomeView.vue)     | 과제 3의 `BaseDashboardCard`, `SearchBar`, `WeatherCard`를 재사용하는 과제 4 홈 화면이며 `/practice4`에 직접 연결됩니다.                            |
+| [`src/views/WeatherAboutView.vue`](./src/views/WeatherAboutView.vue)   | `/about`에서 서비스와 Router 구조를 소개합니다.                                                                                                     |
+| [`src/views/WeatherDetailView.vue`](./src/views/WeatherDetailView.vue) | `/weather/:cityId`의 동적 `cityId`로 지역 날씨와 5일 예보를 표시합니다.                                                                             |
+| [`src/views/NotFoundView.vue`](./src/views/NotFoundView.vue)           | 등록되지 않은 모든 경로를 Catch-all로 받아 404 안내를 표시합니다.                                                                                   |
+
+## 과제 5 — Pinia Store와 온도 단위 전환
+
+- **실행 경로:** [`/practice5`](http://localhost:3000/practice5), 최종 화면 [`/`](http://localhost:3000/)
+- **핵심 기능:** 전역 Store가 섭씨·화씨 상태를 관리하고 메인 날씨 카드와 지역 상세 화면의 모든 기온 표시를 같은 단위로 전환합니다.
+- **확인할 내용:** Pinia 등록, state/getter/action, `storeToRefs`, Store를 사용하는 단위 전환 UI와 화면 반영 흐름을 확인할 수 있습니다.
+
+| 해당 파일                                                                              | 역할과 구현 근거                                                                                                                      |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/main.js`](./src/main.js)                                                         | `createPinia()`를 생성해 Router와 함께 실제 Vue 앱에 전역 등록합니다.                                                                 |
+| [`src/stores/configStore.js`](./src/stores/configStore.js)                             | `unit` state의 초기값을 `celsius`로 두고, `unitSymbol` getter와 `toggleUnit` action을 제공합니다.                                     |
+| [`src/views/PracticeFiveView.vue`](./src/views/PracticeFiveView.vue)                   | `storeToRefs`로 `unit`과 `unitSymbol`을 반응형으로 꺼내 `WeatherHomeView`에 전달하고 `UnitToggler`를 배치하는 과제 5 진입 화면입니다. |
+| [`src/components/exercise/UnitToggler.vue`](./src/components/exercise/UnitToggler.vue) | 현재 단위 기호를 표시하고 버튼 클릭 시 Store의 `toggleUnit` action을 실행합니다.                                                      |
+| [`src/views/WeatherHomeView.vue`](./src/views/WeatherHomeView.vue)                     | 전달받은 단위에 따라 현재·최고·최저 기온을 변환하고 전국 날씨 카드에 동일한 단위 정보를 전달합니다.                                   |
+| [`src/components/exercise/WeatherCard.vue`](./src/components/exercise/WeatherCard.vue) | `unit`과 `unitSymbol` props를 받아 카드의 섭씨 값을 화씨로 변환해 표시합니다.                                                         |
+| [`src/views/WeatherDetailView.vue`](./src/views/WeatherDetailView.vue)                 | Pinia Store를 직접 사용해 지역 상세 기온과 5일 예보에도 동일한 단위를 적용합니다.                                                     |
+
 ## 실행 및 저장소 주소
 
 - GitHub: [wldn-di/skala-vue](https://github.com/wldn-di/skala-vue)
 - 로컬 완성형 화면: [http://localhost:3000/](http://localhost:3000/)
 - 배포 주소: https://skala-vue-jiwoo.vercel.app/
-
-## 1~6일차 과제 코드 구조
-
-```text
-src/
-├── components/
-│   └── exercise/
-│       ├── WeatherMockup.vue         # 1일차: 디렉티브와 Mock 배열 렌더링
-│       ├── WeatherComposition.vue    # 2일차: ref, computed, watch, watchEffect
-│       ├── WeatherParent.vue         # 3일차: 부모·자식 컴포넌트 조합
-│       ├── BaseDashboardCard.vue     # 3일차: slot 공통 카드
-│       ├── SearchBar.vue             # 3일차: props / emit 검색창
-│       ├── WeatherCard.vue           # 3일차: props / emit 날씨 카드
-│       ├── WeatherStatusBar.vue      # 3일차: 선택 상태 표시
-│       └── UnitToggler.vue           # 5일차: Pinia 단위 전환
-├── stores/
-│   └── configStore.js                # 5일차: state / getter / action
-└── views/
-    ├── WeatherHomeView.vue           # 4일차: Router 완성형 화면
-    ├── PracticeFiveView.vue          # 5일차: Store 연결 화면
-    └── PracticeSixView.vue           # 6일차: Pinia·Axios 실행 화면
-```
-
-## 과제별 실행 URL
-
-개발 서버를 실행한 뒤 아래 주소로 접속합니다. 과제 링크는 완성형 앱의 디자인을 유지하기 위해 화면 메뉴에는 추가하지 않았습니다.
-
-| 단계      | URL                                             | 핵심 구현                                    | 주요 파일                                      |
-| --------- | ----------------------------------------------- | -------------------------------------------- | ---------------------------------------------- |
-| 최종 화면 | [`/`](http://localhost:3000/)                   | 과제 5 완성형 화면                           | `PracticeFiveView.vue`                         |
-| 과제 1    | [`/practice1`](http://localhost:3000/practice1) | Mock 배열, `v-for`, `:key`, `v-if`/`v-else`  | `WeatherMockup.vue`                            |
-| 과제 2    | [`/practice2`](http://localhost:3000/practice2) | `ref`, `computed`, `watch`, `watchEffect`    | `WeatherComposition.vue`                       |
-| 과제 3    | [`/practice3`](http://localhost:3000/practice3) | Components, props, emits, slot, scoped style | `WeatherParent.vue` 및 자식 컴포넌트           |
-| 과제 4    | [`/practice4`](http://localhost:3000/practice4) | Router 완성형 화면, 섭씨 고정                | `WeatherHomeView.vue`                          |
-| 과제 5    | [`/practice5`](http://localhost:3000/practice5) | Pinia 섭씨/화씨 단위 전환                    | `PracticeFiveView.vue`, `configStore.js`       |
-| 과제 6    | [`/practice6`](http://localhost:3000/practice6) | Pinia Counter, Axios 날씨·JSON CRUD          | `PracticeSixView.vue` 및 library 실습 컴포넌트 |
-
-Router 검증용 추가 주소는 다음과 같습니다.
-
-- `/about`: 서비스 소개
-- `/weather/:cityId`: 지역 상세 날씨. 예: `/weather/seoul`
-- 존재하지 않는 주소: Catch-all 404 화면
 
 ## 주요 기능
 
@@ -134,7 +185,7 @@ Router 검증용 추가 주소는 다음과 같습니다.
 | `/` · 랭킹                  | 최근 등록 기록, 지역 합산 점수 및 지역별 최고점 조회      |
 | `/weather/:cityId`          | 선택한 지역의 기온·날씨 지표 상세                         |
 | `/about`                    | 서비스와 과제 구성 소개                                   |
-| `/practice1` ~ `/practice6` | 일차별 과제 결과를 독립적으로 검증                        |
+| `/practice1` ~ `/practice5` | 과제 1~5 결과를 단계별로 독립 검증                        |
 | `/:pathMatch(.*)*`          | 존재하지 않는 주소의 404 안내                             |
 
 라우트 컴포넌트는 함수형 `import()`로 지연 로딩합니다. 완성형 화면 안의 날씨지도·전국날씨·저메추·게임·점수 화면은 `activeView` 상태로 전환합니다.
@@ -225,18 +276,6 @@ skala-vue/
 └── package.json
 ```
 
-## 과제 3 컴포넌트 구조
-
-```text
-WeatherParent.vue
-├── BaseDashboardCard.vue  # 검색·목록 공통 디자인과 slot
-│   ├── SearchBar.vue      # currentQuery prop / update-query emit
-│   └── WeatherCard.vue    # cityItem prop / select-card, click-detail emits
-└── WeatherStatusBar.vue   # 개인 Customization 추가 컴포넌트
-```
-
-반응형 데이터, 검색 필터, 선택 상태와 상세 처리 함수는 `WeatherParent.vue`가 소유합니다. Slot으로 주입되는 자식 컴포넌트와도 부모가 직접 props/emits로 통신합니다.
-
 ## 실행 방법
 
 ### 1. 의존성 설치
@@ -296,30 +335,13 @@ Vercel 프로젝트 설정에서 `WEATHER_API_KEY`와 `KAKAO_REST_API_KEY` 환�
 
 환경 변수를 추가하거나 변경한 뒤에는 새 배포를 실행해야 반영됩니다. `vercel.json`은 CSP, Referrer Policy, MIME Sniffing 방지, Frame 차단 등 공통 보안 헤더를 설정합니다.
 
-## 강의 학습 요소
-
-- `v-for`와 `:key`를 이용한 날씨·음식·점수 목록 반복 렌더링
-- `v-if` / `v-else-if` / `v-else`를 이용한 선택·검색 결과·빈 상태 분기
-- `:value`와 `@input`을 이용한 입력값 전달 및 한글 IME 조합 처리
-- `ref`를 이용한 검색어·선택값·로딩·게임 상태 관리
-- `computed`를 이용한 날씨 검색, 메뉴 후보, 맛집 수, 랭킹 계산
-- `watch`와 `watchEffect`를 이용한 상태 변화 확인
-- `props` / `emit`을 이용한 부모·자식 컴포넌트 통신
-- `slot`을 이용한 공통 대시보드 카드 재사용
-- Vue Router의 동적 경로, 지연 로딩, Catch-all Route
-- Pinia의 state / getters / actions와 `storeToRefs`
-- Axios를 이용한 현재 날씨·예보·맛집 HTTP 요청 및 에러 처리
-- `Promise.allSettled()`를 이용한 17개 지역 날씨 부분 성공 처리
-- 구조분해, 전개 연산자, 옵셔널 체이닝 등 Modern JavaScript
-- Element Plus의 Input, Button, Alert, Skeleton, Tag, Message 적용
-
 ## 제출 전 셀프 코드리뷰
 
 - **단일 책임:** 날씨 요청·정규화·캐시는 서버 서비스로, 지도·검색·메뉴·맛집·게임·점수 UI는 기능별 컴포넌트로 분리했습니다. 메인 View는 상태와 컴포넌트를 연결합니다.
 - **반응형 상태:** 검색어·선택 지역·활성 화면·로딩처럼 UI에 반영되는 값은 `ref`로, 필터 목록·추천 날씨·랭킹·집계값은 `computed`로 관리합니다.
 - **로딩·에러 처리:** 날씨 요청을 `loading`, `success`, `partial`, `error`로 구분하고, 실패한 지역은 Mock 데이터로 유지합니다. 예보와 Kakao 맛집은 독립적으로 실패 처리하며 컴포넌트가 해제되면 진행 중인 Axios 요청도 취소합니다.
 - **이름 명확성:** `filteredWeatherList`, `selectedWeather`, `syncLiveWeather`, `registerGameScore`처럼 데이터와 동작이 드러나는 이름을 사용했습니다.
-- **보안:** API 키를 서버 환경에서만 읽고, 외부 API 프록시는 GET 요청과 서버에 등록된 17개 지역 및 검증된 구·군만 허용합니다. CSP는 Axios JSON 실습의 `jsonplaceholder.typicode.com` 이외의 외부 브라우저 연결을 차단합니다.
+- **보안:** API 키를 서버 환경에서만 읽고, 외부 API 프록시는 GET 요청과 서버에 등록된 17개 지역 및 검증된 구·군만 허용합니다. CSP로 허용되지 않은 외부 브라우저 연결을 차단합니다.
 
 ## 검사
 
@@ -333,12 +355,12 @@ npx oxlint .
 
 ## 외부 라이브러리 및 API 적용 근거
 
-| 구분               | 실제 적용 위치                                               | 라이선스·출처                                                                   |
-| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Axios              | 현재 날씨, 5일 예보, Kakao 추천 맛집, `/practice6` JSON CRUD | [axios/axios](https://github.com/axios/axios) · MIT                             |
-| Element Plus       | `/practice3` 검색·상태 UI, 최종 앱 검색·로딩·알림·태그       | [element-plus/element-plus](https://github.com/element-plus/element-plus) · MIT |
-| OpenWeather API    | 현재 날씨 17개 지역, 지역별 5일 예보                         | [OpenWeather API](https://openweathermap.org/api)                               |
-| Kakao Map REST API | 구·군별 추천 맛집 상위 2곳과 위치 지도 미리보기              | [Kakao Map REST API](https://developers.kakao.com/docs/ko/kakaomap/rest-api)    |
+| 구분               | 실제 적용 위치                                         | 라이선스·출처                                                                   |
+| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Axios              | 현재 날씨, 5일 예보, Kakao 추천 맛집 요청              | [axios/axios](https://github.com/axios/axios) · MIT                             |
+| Element Plus       | `/practice3` 검색·상태 UI, 최종 앱 검색·로딩·알림·태그 | [element-plus/element-plus](https://github.com/element-plus/element-plus) · MIT |
+| OpenWeather API    | 현재 날씨 17개 지역, 지역별 5일 예보                   | [OpenWeather API](https://openweathermap.org/api)                               |
+| Kakao Map REST API | 구·군별 추천 맛집 상위 2곳과 위치 지도 미리보기        | [Kakao Map REST API](https://developers.kakao.com/docs/ko/kakaomap/rest-api)    |
 
 Axios와 Element Plus는 `package.json` 및 `package-lock.json`에 버전이 고정되어 있으며 실제 프로덕션 번들에 포함됩니다. API 키는 서버 전용 환경 변수로만 읽고 클라이언트 번들에는 포함하지 않습니다.
 
