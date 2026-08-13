@@ -3,6 +3,7 @@ import axios from 'axios'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import { getCityImageUrl } from '../components/exercise/cityImages'
 import { weatherList } from '../components/exercise/weatherMockData'
 import { useConfigStore } from '../stores/configStore'
 
@@ -15,6 +16,10 @@ const forecastMessage = ref('')
 let forecastRequestController = null
 
 const cityData = computed(() => weatherList.find((item) => item.id === route.params.cityId) ?? null)
+const cityImageStyle = computed(() => {
+  const imageUrl = getCityImageUrl(cityData.value?.id)
+  return imageUrl ? { '--city-image': `url("${imageUrl}")` } : {}
+})
 const convertTemp = (temp) => (configStore.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp)
 const displayTemp = computed(() => {
   if (!cityData.value) return null
@@ -65,37 +70,41 @@ onBeforeUnmount(() => forecastRequestController?.abort())
 <template>
   <main class="detail-page">
     <section v-if="cityData" class="detail-card">
-      <header>
-        <span aria-hidden="true">{{ cityData.emoji }}</span>
-        <div>
-          <p>REGION WEATHER DETAIL</p>
-          <h1>{{ cityData.fullName }}</h1>
-        </div>
-      </header>
+      <div class="detail-hero" :style="cityImageStyle">
+        <div class="detail-hero-content">
+          <header>
+            <span aria-hidden="true">{{ cityData.emoji }}</span>
+            <div>
+              <p>REGION WEATHER DETAIL</p>
+              <h1>{{ cityData.fullName }}</h1>
+            </div>
+          </header>
 
-      <div class="temperature">
-        <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
-        <span>{{ cityData.status }}</span>
+          <div class="temperature">
+            <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
+            <span>{{ cityData.status }}</span>
+          </div>
+
+          <dl>
+            <div>
+              <dt>최고 / 최저</dt>
+              <dd>{{ convertTemp(cityData.high) }}{{ configStore.unitSymbol }} / {{ convertTemp(cityData.low) }}{{ configStore.unitSymbol }}</dd>
+            </div>
+            <div>
+              <dt>습도</dt>
+              <dd>{{ cityData.humidity }}%</dd>
+            </div>
+            <div>
+              <dt>강수 확률</dt>
+              <dd>{{ cityData.rainChance }}%</dd>
+            </div>
+            <div>
+              <dt>풍속</dt>
+              <dd>{{ cityData.wind }}m/s</dd>
+            </div>
+          </dl>
+        </div>
       </div>
-
-      <dl>
-        <div>
-          <dt>최고 / 최저</dt>
-          <dd>{{ convertTemp(cityData.high) }}{{ configStore.unitSymbol }} / {{ convertTemp(cityData.low) }}{{ configStore.unitSymbol }}</dd>
-        </div>
-        <div>
-          <dt>습도</dt>
-          <dd>{{ cityData.humidity }}%</dd>
-        </div>
-        <div>
-          <dt>강수 확률</dt>
-          <dd>{{ cityData.rainChance }}%</dd>
-        </div>
-        <div>
-          <dt>풍속</dt>
-          <dd>{{ cityData.wind }}m/s</dd>
-        </div>
-      </dl>
 
       <section class="forecast-section" aria-labelledby="forecast-title" :aria-busy="forecastStatus === 'loading'">
         <div class="forecast-heading">
@@ -138,11 +147,41 @@ onBeforeUnmount(() => forecastRequestController?.abort())
 }
 
 .detail-card {
-  padding: 30px;
+  overflow: hidden;
   background: #fffaf0;
   border: 1px solid #e6d8b9;
   border-radius: 24px;
   box-shadow: 0 14px 40px rgba(87, 65, 26, 0.11);
+}
+
+.detail-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+}
+
+.detail-hero::before,
+.detail-hero::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+.detail-hero::before {
+  background-image: var(--city-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(1.5px);
+  transform: scale(1.025);
+}
+
+.detail-hero::after {
+  background: linear-gradient(135deg, rgba(255, 250, 240, 0.56), rgba(255, 255, 255, 0.38));
+}
+
+.detail-hero-content {
+  position: relative;
+  z-index: 1;
 }
 
 header {
@@ -199,8 +238,9 @@ dl {
 
 dl div {
   padding: 14px;
-  background: #f3eddf;
+  background: rgba(255, 250, 240, 0.72);
   border-radius: 12px;
+  backdrop-filter: blur(4px);
 }
 
 dt {
@@ -214,8 +254,7 @@ dd {
 }
 
 .forecast-section {
-  margin-top: 22px;
-  padding-top: 20px;
+  padding: 20px 30px 30px;
   border-top: 1px solid #e6d8b9;
 }
 
@@ -271,6 +310,7 @@ dd {
 }
 
 .empty {
+  padding: 30px;
   text-align: center;
 }
 
@@ -293,8 +333,16 @@ dd {
 }
 
 @media (max-width: 560px) {
+  .detail-hero {
+    padding: 24px 20px;
+  }
+
   dl {
     grid-template-columns: 1fr;
+  }
+
+  .forecast-section {
+    padding: 20px;
   }
 
   .forecast-grid {

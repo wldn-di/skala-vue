@@ -1,25 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-const CITY_IMAGE_BY_ID = {
-  seoul: 'seoul.png',
-  busan: 'busan.png',
-  daegu: 'daegu.png',
-  incheon: 'incheon.png',
-  gwangju: 'gyangju.png',
-  daejeon: 'daejeun.png',
-  ulsan: 'ulsan.png',
-  sejong: 'sejong.png',
-  gyeonggi: 'gyeongji.png',
-  gangwon: 'gangwon.png',
-  chungbuk: 'choongcheong_north.png',
-  chungnam: 'choongcheong_south.png',
-  jeonbuk: 'jeonbuk.png',
-  jeonnam: 'jeonnam.png',
-  gyeongbuk: 'gyeongsang_north.png',
-  gyeongnam: 'gyeongsang_south.png',
-  jeju: 'jeju.png',
-}
+import { getCityImageUrl } from './cityImages'
 
 // 과제 3과 최종 화면에서 재사용하는 날씨 카드
 const props = defineProps({
@@ -52,10 +34,7 @@ const emit = defineEmits(['select-card', 'click-detail'])
 const convertTemp = (temp) => (props.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp)
 const displayTemp = computed(() => convertTemp(props.cityItem.temp))
 const displayUnitSymbol = computed(() => props.unitSymbol || (props.unit === 'fahrenheit' ? '℉' : '℃'))
-const cityImageUrl = computed(() => {
-  const fileName = CITY_IMAGE_BY_ID[props.cityItem.id]
-  return fileName ? `/cities/${fileName}` : ''
-})
+const cityImageUrl = computed(() => getCityImageUrl(props.cityItem.id))
 </script>
 
 <template>
