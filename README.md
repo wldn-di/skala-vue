@@ -49,7 +49,7 @@
 
 - GitHub: [wldn-di/skala-vue](https://github.com/wldn-di/skala-vue)
 - 로컬 완성형 화면: [http://localhost:3000/](http://localhost:3000/)
-- 배포 주소: [https://skala-vue-jiwoo.vercel.app/]
+- 배포 주소: https://skala-vue-jiwoo.vercel.app/
 
 ## 과제별 실행 URL
 
