@@ -51,6 +51,27 @@
 - 로컬 완성형 화면: [http://localhost:3000/](http://localhost:3000/)
 - 배포 주소: https://skala-vue-jiwoo.vercel.app/
 
+## 1~5일차 과제 코드 구조
+
+```text
+src/
+├── components/
+│   └── exercise/
+│       ├── WeatherMockup.vue         # 1일차: 디렉티브와 Mock 배열 렌더링
+│       ├── WeatherComposition.vue    # 2일차: ref, computed, watch, watchEffect
+│       ├── WeatherParent.vue         # 3일차: 부모·자식 컴포넌트 조합
+│       ├── BaseDashboardCard.vue     # 3일차: slot 공통 카드
+│       ├── SearchBar.vue             # 3일차: props / emit 검색창
+│       ├── WeatherCard.vue           # 3일차: props / emit 날씨 카드
+│       ├── WeatherStatusBar.vue      # 3일차: 선택 상태 표시
+│       └── UnitToggler.vue           # 5일차: Pinia 단위 전환
+├── stores/
+│   └── configStore.js                # 5일차: state / getter / action
+└── views/
+    ├── WeatherHomeView.vue           # 4일차: Router 완성형 화면
+    └── PracticeFiveView.vue          # 5일차: Store 연결 화면
+```
+
 ## 과제별 실행 URL
 
 개발 서버를 실행한 뒤 아래 주소로 접속합니다. 과제 링크는 완성형 앱의 디자인을 유지하기 위해 화면 메뉴에는 추가하지 않았습니다.
@@ -182,27 +203,6 @@ skala-vue/
 ├── vite.config.js                    # Vite 설정과 로컬 날씨 API 플러그인
 ├── vercel.json                       # 보안 헤더 설정
 └── package.json
-```
-
-## 1~5일차 과제 코드 구조
-
-```text
-src/
-├── components/
-│   └── exercise/
-│       ├── WeatherMockup.vue         # 1일차: 디렉티브와 Mock 배열 렌더링
-│       ├── WeatherComposition.vue    # 2일차: ref, computed, watch, watchEffect
-│       ├── WeatherParent.vue         # 3일차: 부모·자식 컴포넌트 조합
-│       ├── BaseDashboardCard.vue     # 3일차: slot 공통 카드
-│       ├── SearchBar.vue             # 3일차: props / emit 검색창
-│       ├── WeatherCard.vue           # 3일차: props / emit 날씨 카드
-│       ├── WeatherStatusBar.vue      # 3일차: 선택 상태 표시
-│       └── UnitToggler.vue           # 5일차: Pinia 단위 전환
-├── stores/
-│   └── configStore.js                # 5일차: state / getter / action
-└── views/
-    ├── WeatherHomeView.vue           # 4일차: Router 완성형 화면
-    └── PracticeFiveView.vue          # 5일차: Store 연결 화면
 ```
 
 ## 과제 3 컴포넌트 구조
