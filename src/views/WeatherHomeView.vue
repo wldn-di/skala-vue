@@ -290,7 +290,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   <div class="weather-bite-app">
     <header class="site-header">
       <button class="site-brand" type="button" @click="activeView = 'weather'">
-        <span aria-hidden="true">🌤️</span>
+        <img src="/favicon.ico" alt="" aria-hidden="true" />
         <div>
           <strong>날씨한입</strong>
           <small>WEATHER × FOOD</small>
@@ -573,14 +573,11 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   border: 0;
 }
 
-.site-brand > span {
-  display: grid;
-  place-items: center;
+.site-brand > img {
   width: 32px;
   height: 32px;
-  font-size: 1.15rem;
-  background: var(--sun);
   border-radius: 10px;
+  object-fit: cover;
 }
 
 .site-brand > div,
