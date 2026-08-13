@@ -9,8 +9,7 @@ import WeatherCard from '../components/exercise/WeatherCard.vue'
 import WeatherMenuRecommend from '../components/exercise/WeatherMenuRecommend.vue'
 import WeatherRegionMap from '../components/exercise/WeatherRegionMap.vue'
 import WeatherRestaurantPanel from '../components/exercise/WeatherRestaurantPanel.vue'
-import GameScorePage from '../components/exercise/game/GameScorePage.vue'
-import GameScoreRegister from '../components/exercise/game/GameScoreRegister.vue'
+import GameScoreBoard from '../components/exercise/game/GameScoreBoard.vue'
 import WeatherGamePage from '../components/exercise/game/WeatherGamePage.vue'
 import { weatherList as weatherMockList } from '../components/exercise/weatherMockData'
 
@@ -256,7 +255,6 @@ const registerGameScore = ({ homeRegionId, nickname }) => {
   })
   window.localStorage.setItem(GAME_SCORE_STORAGE_KEY, JSON.stringify(gameScores.value))
   pendingGameResult.value = null
-  activeView.value = 'myScore'
 }
 
 const addRestaurant = ({ name, signatureMenu, note }) => {
@@ -301,12 +299,11 @@ onBeforeUnmount(() => weatherRequestController?.abort())
           저메추
           <span>100</span>
         </button>
-        <button type="button" :class="{ active: activeView === 'game' }" @click="activeView = 'game'">게임</button>
-        <button type="button" :class="{ active: activeView === 'myScore' }" @click="activeView = 'myScore'">내점수</button>
-        <button type="button" :class="{ active: activeView === 'scoreRegister' }" @click="activeView = 'scoreRegister'">
-          점수등록
+        <button type="button" :class="{ active: activeView === 'game' }" @click="activeView = 'game'">
+          게임
           <span v-if="pendingGameResult">1</span>
         </button>
+        <button type="button" :class="{ active: activeView === 'ranking' }" @click="activeView = 'ranking'">랭킹</button>
       </nav>
 
       <div class="header-weather">
@@ -510,13 +507,15 @@ onBeforeUnmount(() => weatherRequestController?.abort())
       :weather="recommendWeather"
       :best-score="bestGameScore"
       :last-result="pendingGameResult"
+      :regions="weatherList"
+      :scores="gameScores"
       @finish="handleGameFinished"
-      @go-register="activeView = 'scoreRegister'"
+      @register="registerGameScore"
     />
 
-    <GameScorePage v-else-if="activeView === 'myScore'" :scores="gameScores" @play="activeView = 'game'" />
-
-    <GameScoreRegister v-else :result="pendingGameResult" :regions="weatherList" @play="activeView = 'game'" @register="registerGameScore" />
+    <main v-else-if="activeView === 'ranking'" class="ranking-page">
+      <GameScoreBoard :scores="gameScores" />
+    </main>
   </div>
 </template>
 
@@ -683,6 +682,12 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   height: calc(100svh - 66px);
   margin: 0 auto;
   padding: 12px 0 14px;
+}
+
+.ranking-page {
+  width: min(1200px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 12px 0 20px;
 }
 
 .nationwide-card .weather-list-heading {

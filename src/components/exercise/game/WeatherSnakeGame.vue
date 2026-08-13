@@ -167,47 +167,51 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="snake-game" aria-label="날씨한입 스네이크 게임">
-    <header class="game-details">
-      <span
-        >현재 점수 <strong>{{ score }}</strong></span
-      >
-      <span
-        >최고 점수 <strong>{{ currentHighScore }}</strong></span
-      >
-    </header>
+    <div v-if="gameStatus === 'ready'" class="game-intro">
+      <img src="/snake_game.png" alt="푸드 스네이크 게임 안내" />
+      <button type="button" @click="startGame">게임 시작</button>
+    </div>
 
-    <div class="board-frame">
-      <div class="play-board">
-        <span class="food" :style="cellStyle(food)" :title="missionFood.name" aria-hidden="true">
-          {{ missionFood.emoji }}
-        </span>
+    <template v-else>
+      <header class="game-details">
         <span
-          v-for="(segment, index) in snakeBody"
-          :key="`${segment.x}-${segment.y}-${index}`"
-          class="snake-segment"
-          :class="{ head: index === 0 }"
-          :style="cellStyle(segment)"
-          aria-hidden="true"
-        ></span>
+          >현재 점수 <strong>{{ score }}</strong></span
+        >
+        <span
+          >최고 점수 <strong>{{ currentHighScore }}</strong></span
+        >
+      </header>
 
-        <div v-if="gameStatus !== 'running'" class="game-overlay">
-          <span aria-hidden="true">{{ gameStatus === 'finished' ? '🏁' : '🎮' }}</span>
-          <strong>{{ gameStatus === 'finished' ? '게임 종료!' : '푸드 스네이크' }}</strong>
-          <p v-if="gameStatus === 'finished'">{{ missionFood.name }} {{ foodsEaten }}개 · {{ score }}점</p>
-          <p v-else>방향키로 뱀을 움직여 날씨 음식을 모아보세요.</p>
-          <button type="button" @click="startGame">
-            {{ gameStatus === 'finished' ? '다시 도전' : '게임 시작' }}
-          </button>
+      <div class="board-frame">
+        <div class="play-board">
+          <span class="food" :style="cellStyle(food)" :title="missionFood.name" aria-hidden="true">
+            {{ missionFood.emoji }}
+          </span>
+          <span
+            v-for="(segment, index) in snakeBody"
+            :key="`${segment.x}-${segment.y}-${index}`"
+            class="snake-segment"
+            :class="{ head: index === 0 }"
+            :style="cellStyle(segment)"
+            aria-hidden="true"
+          ></span>
+
+          <div v-if="gameStatus === 'finished'" class="game-overlay">
+            <span aria-hidden="true">🏁</span>
+            <strong>게임 종료!</strong>
+            <p>{{ missionFood.name }} {{ foodsEaten }}개 · {{ score }}점</p>
+            <button type="button" @click="startGame">다시 도전</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="controls" aria-label="게임 방향 조작">
-      <button type="button" aria-label="왼쪽" @click="changeDirection('ArrowLeft')">←</button>
-      <button type="button" aria-label="위쪽" @click="changeDirection('ArrowUp')">↑</button>
-      <button type="button" aria-label="아래쪽" @click="changeDirection('ArrowDown')">↓</button>
-      <button type="button" aria-label="오른쪽" @click="changeDirection('ArrowRight')">→</button>
-    </div>
+      <div class="controls" aria-label="게임 방향 조작">
+        <button type="button" aria-label="왼쪽" @click="changeDirection('ArrowLeft')">←</button>
+        <button type="button" aria-label="위쪽" @click="changeDirection('ArrowUp')">↑</button>
+        <button type="button" aria-label="아래쪽" @click="changeDirection('ArrowDown')">↓</button>
+        <button type="button" aria-label="오른쪽" @click="changeDirection('ArrowRight')">→</button>
+      </div>
+    </template>
   </section>
 </template>
 
@@ -222,6 +226,39 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   box-shadow: 0 20px 50px rgba(45, 56, 43, 0.24);
+}
+
+.game-intro {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: 14px;
+}
+
+.game-intro img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100% - 64px);
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+.game-intro button {
+  width: min(310px, 100%);
+  min-height: 48px;
+  margin-top: 12px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 850;
+  background: linear-gradient(135deg, #ff8a3d, #f36b1f);
+  border: 0;
+  border-radius: 15px;
+  box-shadow: 0 12px 24px rgba(230, 101, 29, 0.28);
 }
 
 .game-details {
