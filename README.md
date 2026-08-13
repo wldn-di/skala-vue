@@ -38,7 +38,7 @@
       <sub>날씨 푸드 스네이크 게임</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/game_ranking_weather_2." alt="게임 기록과 지역 랭킹 화면" />
+      <img src="./public/screenshots/game_ranking_weather_2.png" alt="게임 기록과 지역 랭킹 화면" />
       <br />
       <sub>내 게임 기록과 지역 랭킹</sub>
     </td>
