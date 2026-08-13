@@ -4,7 +4,7 @@
 
 날씨 정보가 중심이며, 시·도에서 구·군으로 이어지는 지도 탐색, 나만의 맛집 등록, 100가지 저녁 메뉴 추천, 날씨 푸드 스네이크 게임을 한 화면에서 제공합니다. OpenWeather 요청에 실패한 지역은 과제용 Mock 데이터를 유지해 화면을 안정적으로 표시합니다.
 
-![날씨한입 전국 날씨 지도](./public/screenshots/main_page.png)
+![날씨한입 전국 날씨 지도](./public/screenshots/main_page.png?v=20260813-2)
 
 <table>
   <tr>
@@ -21,24 +21,24 @@
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="./public/screenshots/weather_list.png" alt="전국 날씨 목록 화면" />
+      <img src="./public/screenshots/weather_list.png?v=20260813-2" alt="전국 날씨 목록 화면" />
       <br />
       <sub>전국 17개 시·도 날씨 목록</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/weather_today_i_eat.png" alt="날씨 기반 저녁 메뉴 추천 화면" />
+      <img src="./public/screenshots/weather_today_i_eat.png?v=20260813-2" alt="날씨 기반 저녁 메뉴 추천 화면" />
       <br />
       <sub>날씨 기반 저녁 메뉴 추천</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="./public/screenshots/game_weather.png" alt="날씨 푸드 스네이크 게임 화면" />
+      <img src="./public/screenshots/game_weather.png?v=20260813-2" alt="날씨 푸드 스네이크 게임 화면" />
       <br />
       <sub>날씨 푸드 스네이크 게임</sub>
     </td>
     <td align="center" width="50%">
-      <img src="./public/screenshots/game_ranking_weather.png" alt="게임 기록과 지역 랭킹 화면" />
+      <img src="./public/screenshots/game_ranking_weather.png?v=20260813-2" alt="게임 기록과 지역 랭킹 화면" />
       <br />
       <sub>내 게임 기록과 지역 랭킹</sub>
     </td>
