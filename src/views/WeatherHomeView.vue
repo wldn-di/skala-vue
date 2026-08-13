@@ -1,4 +1,5 @@
 <script setup>
+import axios from 'axios'
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -188,16 +189,11 @@ const syncLiveWeather = async () => {
   weatherApiMessage.value = '전국 17개 시·도의 현재 날씨를 안전하게 불러오고 있습니다.'
 
   try {
-    const response = await fetch('/api/weather', {
+    const response = await axios.get('/api/weather', {
       headers: { Accept: 'application/json' },
       signal: weatherRequestController.signal,
     })
-    const payload = await response.json()
-    if (!response.ok) {
-      const requestError = new Error('Weather proxy request failed')
-      requestError.code = payload.error
-      throw requestError
-    }
+    const payload = response.data
     if (!Array.isArray(payload.data)) throw new Error('Weather response is invalid')
 
     const weatherByRegion = new Map(payload.data.map((item) => [item.id, item]))
@@ -217,10 +213,11 @@ const syncLiveWeather = async () => {
     weatherApiStatus.value = failedCount ? 'partial' : 'success'
     weatherApiMessage.value = failedCount ? `${failedCount}개 지역은 기존 데이터로 유지하고 나머지 지역은 실시간 날씨로 갱신했습니다.` : '전국 17개 시·도의 실시간 날씨를 갱신했습니다.'
   } catch (error) {
-    if (error.name === 'AbortError') return
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED') return
+    const errorCode = error.response?.data?.error ?? error.code
     weatherApiStatus.value = 'error'
     weatherApiMessage.value =
-      error.code === 'WEATHER_API_UNAUTHORIZED' ? 'OpenWeather 키가 아직 활성화되지 않았습니다. 활성화 후 새로고침해 주세요.' : '실시간 날씨를 불러오지 못해 안전하게 Mock 데이터를 유지합니다.'
+      errorCode === 'WEATHER_API_UNAUTHORIZED' ? 'OpenWeather 키가 아직 활성화되지 않았습니다. 활성화 후 새로고침해 주세요.' : '실시간 날씨를 불러오지 못해 안전하게 Mock 데이터를 유지합니다.'
   }
 }
 
@@ -391,7 +388,9 @@ onBeforeUnmount(() => weatherRequestController?.abort())
                     {{ selectedWeather.dataSource === 'live' ? `OpenWeather 관측 ${formatWeatherUpdateTime(selectedWeather.observedAt)}` : '과제용 Mock' }}
                   </small>
                   <div class="temperature-line">
-                    <strong>{{ displayTemp(selectedWeather.temp) }}<sup>{{ unitSymbol }}</sup></strong>
+                    <strong
+                      >{{ displayTemp(selectedWeather.temp) }}<sup>{{ unitSymbol }}</sup></strong
+                    >
                     <p>{{ selectedWeather.status }}</p>
                   </div>
                   <span v-if="selectedWeather.temp >= 25" class="large-label hot"> 🔥 더움 (25도 이상) </span>
@@ -481,15 +480,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
             </div>
           </div>
 
-          <SearchBar
-            class="search-area"
-            variant="dashboard"
-            :current-query="searchQuery"
-            :loading="isWeatherLoading"
-            show-refresh
-            @update-query="searchQuery = $event"
-            @refresh="syncLiveWeather"
-          />
+          <SearchBar class="search-area" variant="dashboard" :current-query="searchQuery" :loading="isWeatherLoading" show-refresh @update-query="searchQuery = $event" @refresh="syncLiveWeather" />
         </header>
 
         <div class="selection-status" role="status">{{ selectedCityInfo }}</div>
@@ -540,9 +531,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   --coral: #d96b43;
   min-height: 100svh;
   color: #293126;
-  background:
-    radial-gradient(circle at 8% 15%, rgba(244, 189, 62, 0.13), transparent 25rem),
-    radial-gradient(circle at 92% 78%, rgba(64, 81, 59, 0.09), transparent 24rem);
+  background: radial-gradient(circle at 8% 15%, rgba(244, 189, 62, 0.13), transparent 25rem), radial-gradient(circle at 92% 78%, rgba(64, 81, 59, 0.09), transparent 24rem);
 }
 
 .site-header {
@@ -890,9 +879,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   min-height: 0;
   margin-top: 7px;
   background:
-    radial-gradient(circle at 50% 44%, rgba(244, 189, 62, 0.2), transparent 45%),
-    radial-gradient(circle at 14% 82%, rgba(98, 119, 79, 0.1), transparent 27%),
-    linear-gradient(145deg, #fffaf0, #f3eddb);
+    radial-gradient(circle at 50% 44%, rgba(244, 189, 62, 0.2), transparent 45%), radial-gradient(circle at 14% 82%, rgba(98, 119, 79, 0.1), transparent 27%), linear-gradient(145deg, #fffaf0, #f3eddb);
   border: 1px solid #e6d8b9;
   border-radius: 18px;
   overflow: hidden;
@@ -966,8 +953,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   flex-direction: column;
   padding: 18px;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(249, 244, 229, 0.98));
+  background: linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(249, 244, 229, 0.98));
 }
 
 .empty-detail-panel,
@@ -1129,9 +1115,7 @@ onBeforeUnmount(() => weatherRequestController?.abort())
   min-height: 164px;
   padding: 22px 24px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.88), transparent 8rem),
-    linear-gradient(135deg, #fff0b6, #eacb68);
+  background: radial-gradient(circle at 88% 23%, rgba(255, 255, 255, 0.88), transparent 8rem), linear-gradient(135deg, #fff0b6, #eacb68);
   border: 1px solid #e3c975;
   border-radius: 21px;
 }

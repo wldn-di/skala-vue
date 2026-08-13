@@ -51,7 +51,7 @@
 - 로컬 완성형 화면: [http://localhost:3000/](http://localhost:3000/)
 - 배포 주소: https://skala-vue-jiwoo.vercel.app/
 
-## 1~5일차 과제 코드 구조
+## 1~6일차 과제 코드 구조
 
 ```text
 src/
@@ -69,21 +69,23 @@ src/
 │   └── configStore.js                # 5일차: state / getter / action
 └── views/
     ├── WeatherHomeView.vue           # 4일차: Router 완성형 화면
-    └── PracticeFiveView.vue          # 5일차: Store 연결 화면
+    ├── PracticeFiveView.vue          # 5일차: Store 연결 화면
+    └── PracticeSixView.vue           # 6일차: Pinia·Axios 실행 화면
 ```
 
 ## 과제별 실행 URL
 
 개발 서버를 실행한 뒤 아래 주소로 접속합니다. 과제 링크는 완성형 앱의 디자인을 유지하기 위해 화면 메뉴에는 추가하지 않았습니다.
 
-| 단계 | URL | 핵심 구현 | 주요 파일 |
-|---|---|---|---|
-| 최종 화면 | [`/`](http://localhost:3000/) | 과제 5 완성형 화면 | `PracticeFiveView.vue` |
-| 과제 1 | [`/practice1`](http://localhost:3000/practice1) | Mock 배열, `v-for`, `:key`, `v-if`/`v-else` | `WeatherMockup.vue` |
-| 과제 2 | [`/practice2`](http://localhost:3000/practice2) | `ref`, `computed`, `watch`, `watchEffect` | `WeatherComposition.vue` |
-| 과제 3 | [`/practice3`](http://localhost:3000/practice3) | Components, props, emits, slot, scoped style | `WeatherParent.vue` 및 자식 컴포넌트 |
-| 과제 4 | [`/practice4`](http://localhost:3000/practice4) | Router 완성형 화면, 섭씨 고정 | `WeatherHomeView.vue` |
-| 과제 5 | [`/practice5`](http://localhost:3000/practice5) | Pinia 섭씨/화씨 단위 전환 | `PracticeFiveView.vue`, `configStore.js` |
+| 단계      | URL                                             | 핵심 구현                                    | 주요 파일                                      |
+| --------- | ----------------------------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| 최종 화면 | [`/`](http://localhost:3000/)                   | 과제 5 완성형 화면                           | `PracticeFiveView.vue`                         |
+| 과제 1    | [`/practice1`](http://localhost:3000/practice1) | Mock 배열, `v-for`, `:key`, `v-if`/`v-else`  | `WeatherMockup.vue`                            |
+| 과제 2    | [`/practice2`](http://localhost:3000/practice2) | `ref`, `computed`, `watch`, `watchEffect`    | `WeatherComposition.vue`                       |
+| 과제 3    | [`/practice3`](http://localhost:3000/practice3) | Components, props, emits, slot, scoped style | `WeatherParent.vue` 및 자식 컴포넌트           |
+| 과제 4    | [`/practice4`](http://localhost:3000/practice4) | Router 완성형 화면, 섭씨 고정                | `WeatherHomeView.vue`                          |
+| 과제 5    | [`/practice5`](http://localhost:3000/practice5) | Pinia 섭씨/화씨 단위 전환                    | `PracticeFiveView.vue`, `configStore.js`       |
+| 과제 6    | [`/practice6`](http://localhost:3000/practice6) | Pinia Counter, Axios 날씨·JSON CRUD          | `PracticeSixView.vue` 및 library 실습 컴포넌트 |
 
 Router 검증용 추가 주소는 다음과 같습니다.
 
@@ -95,6 +97,8 @@ Router 검증용 추가 주소는 다음과 같습니다.
 
 - 전국 17개 시·도의 현재 날씨를 지도와 카드로 표시
 - OpenWeather 실시간 관측값과 지역별 Mock 데이터 폴백
+- OpenWeather 5일 예보 API를 이용한 지역 상세 예보
+- Kakao Local REST API를 이용한 선택 구·군 추천 맛집 상위 2곳과 정적 지도 미리보기
 - 일부 지역 요청만 실패해도 성공한 지역부터 갱신하는 부분 성공 처리
 - 시·도에서 구·군으로 이어지는 SVG 지도 드릴다운
 - 구·군별 나만의 맛집 등록과 삭제
@@ -108,30 +112,30 @@ Router 검증용 추가 주소는 다음과 같습니다.
 
 ## 기술 스택
 
-| 구분 | 사용 기술 |
-|---|---|
-| Frontend | Vue 3, Composition API, Vite |
-| State | Pinia |
-| Router | Vue Router |
-| HTTP | Fetch API, Axios 실습 |
-| UI | CSS, SVG Map, Element Plus 실습 |
-| Weather | OpenWeather API |
-| Serverless / Deploy | Vercel Functions, Vercel |
-| Quality | ESLint, Oxlint, Prettier |
+| 구분                | 사용 기술                    |
+| ------------------- | ---------------------------- |
+| Frontend            | Vue 3, Composition API, Vite |
+| State               | Pinia                        |
+| Router              | Vue Router                   |
+| HTTP                | Axios, Fetch API(Server)     |
+| UI                  | Element Plus, CSS, SVG Map   |
+| Weather             | OpenWeather API              |
+| Serverless / Deploy | Vercel Functions, Vercel     |
+| Quality             | ESLint, Oxlint, Prettier     |
 
 ## 화면 구성
 
-| 경로 또는 메뉴 | 역할 |
-|---|---|
-| `/` · 날씨지도 | 전국 지도에서 시·도를 선택하고 날씨와 구·군별 맛집을 확인 |
-| `/` · 전국날씨 | 17개 시·도 날씨 카드 검색 및 상세 화면 이동 |
-| `/` · 저메추 | 날씨 맞춤 또는 완전 랜덤 방식으로 저녁 메뉴 추천 |
-| `/` · 게임 | 현재 선택 지역의 날씨를 반영한 푸드 스네이크 게임 |
-| `/` · 내점수 / 점수등록 | 브라우저에 저장한 플레이 기록과 지역 랭킹 관리 |
-| `/weather/:cityId` | 선택한 지역의 기온·날씨 지표 상세 |
-| `/about` | 서비스와 과제 구성 소개 |
-| `/practice1` ~ `/practice5` | 일차별 과제 결과를 독립적으로 검증 |
-| `/:pathMatch(.*)*` | 존재하지 않는 주소의 404 안내 |
+| 경로 또는 메뉴              | 역할                                                      |
+| --------------------------- | --------------------------------------------------------- |
+| `/` · 날씨지도              | 전국 지도에서 시·도를 선택하고 날씨와 구·군별 맛집을 확인 |
+| `/` · 전국날씨              | 17개 시·도 날씨 카드 검색 및 상세 화면 이동               |
+| `/` · 저메추                | 날씨 맞춤 또는 완전 랜덤 방식으로 저녁 메뉴 추천          |
+| `/` · 게임                  | 현재 선택 지역의 날씨를 반영한 푸드 스네이크 게임         |
+| `/` · 내점수 / 점수등록     | 브라우저에 저장한 플레이 기록과 지역 랭킹 관리            |
+| `/weather/:cityId`          | 선택한 지역의 기온·날씨 지표 상세                         |
+| `/about`                    | 서비스와 과제 구성 소개                                   |
+| `/practice1` ~ `/practice6` | 일차별 과제 결과를 독립적으로 검증                        |
+| `/:pathMatch(.*)*`          | 존재하지 않는 주소의 404 안내                             |
 
 라우트 컴포넌트는 함수형 `import()`로 지연 로딩합니다. 완성형 화면 안의 날씨지도·전국날씨·저메추·게임·점수 화면은 `activeView` 상태로 전환합니다.
 
@@ -139,12 +143,21 @@ Router 검증용 추가 주소는 다음과 같습니다.
 
 ### 날씨
 
-1. 완성형 화면이 마운트되면 브라우저가 `/api/weather`를 요청합니다.
+1. 완성형 화면이 마운트되면 브라우저가 Axios로 `/api/weather`를 요청합니다.
 2. 로컬에서는 Vite 플러그인, 배포 환경에서는 Vercel Function이 요청을 처리합니다.
 3. 서버는 허용된 전국 17개 시·도 좌표만 OpenWeather에 요청하며, `Promise.allSettled()`로 지역별 성공과 실패를 분리합니다.
 4. 응답에서 기온·체감 온도·습도·풍속·강수량과 날씨 코드를 화면용 데이터로 정규화합니다.
 5. 브라우저는 성공한 지역만 실시간 값으로 병합하고 실패한 지역은 기존 Mock 데이터를 유지합니다.
 6. 새로고침 버튼으로 다시 동기화할 수 있으며, 화면을 떠날 때 진행 중인 요청을 취소합니다.
+
+### 예보와 외부 맛집
+
+1. 지역 상세 화면은 Axios로 `/api/forecast?regionId=...`를 호출합니다.
+2. Vercel Function은 허용된 지역 좌표만 OpenWeather 5 day / 3 hour forecast API에 전달하고 일별 예보로 정규화합니다.
+3. 구·군을 선택하면 Axios로 `/api/restaurants?regionId=...&district=...`를 호출합니다.
+4. Vercel Function은 지역과 구·군을 검증한 뒤 Kakao Local 키워드 검색 API에서 음식점 상위 2곳을 가져옵니다.
+5. 각 추천 카드의 위치는 REST 키를 숨긴 `/api/place-preview`가 Kakao 정적 지도 이미지로 제공합니다.
+6. 외부 API가 실패해도 현재 날씨, Mock 폴백, 사용자가 직접 등록한 맛집은 그대로 사용할 수 있습니다.
 
 ### 지도와 맛집
 
@@ -169,27 +182,34 @@ Router 검증용 추가 주소는 다음과 같습니다.
 
 ## 캐시 및 저장 정책
 
-| 데이터 | 저장 위치 | 유지 방식 |
-|---|---|---|
-| OpenWeather 완성 응답 | 서버 메모리 | 10분 캐시 |
-| 마지막 정상 날씨 | 서버 메모리 | 전체 요청 실패 시 최대 1시간 이내 응답을 Stale 데이터로 재사용 |
-| Vercel 날씨 응답 | CDN | 10분 캐시, 이후 30분 동안 재검증하며 기존 응답 사용 |
-| 등록 맛집 | `localStorage` | 사용자가 삭제하기 전까지 현재 브라우저에 유지 |
-| 게임 점수와 지역 랭킹 원본 | `localStorage` | 새로고침 후에도 현재 브라우저에 유지 |
-| 섭씨·화씨 설정 | Pinia 메모리 | 실행 중 유지, 새로고침 시 섭씨로 초기화 |
-| 과제용 지역 날씨 | 소스 코드 Mock 데이터 | API 미설정·실패 지역의 폴백으로 사용 |
+| 데이터                     | 저장 위치             | 유지 방식                                                      |
+| -------------------------- | --------------------- | -------------------------------------------------------------- |
+| OpenWeather 완성 응답      | 서버 메모리           | 10분 캐시                                                      |
+| 마지막 정상 날씨           | 서버 메모리           | 전체 요청 실패 시 최대 1시간 이내 응답을 Stale 데이터로 재사용 |
+| 지역별 5일 예보            | 서버 메모리·CDN       | 10분 캐시, 이후 30분 동안 재검증                               |
+| Kakao 추천 맛집            | 서버 메모리·CDN       | 지역·구군별 10분 캐시, 이후 30분 동안 재검증                   |
+| Vercel 날씨 응답           | CDN                   | 10분 캐시, 이후 30분 동안 재검증하며 기존 응답 사용            |
+| 등록 맛집                  | `localStorage`        | 사용자가 삭제하기 전까지 현재 브라우저에 유지                  |
+| 게임 점수와 지역 랭킹 원본 | `localStorage`        | 새로고침 후에도 현재 브라우저에 유지                           |
+| 섭씨·화씨 설정             | Pinia 메모리          | 실행 중 유지, 새로고침 시 섭씨로 초기화                        |
+| 과제용 지역 날씨           | 소스 코드 Mock 데이터 | API 미설정·실패 지역의 폴백으로 사용                           |
 
 ## 프로젝트 구조
 
 ```text
 skala-vue/
 ├── api/
-│   └── weather.js                    # Vercel 날씨 서버리스 함수
+│   ├── weather.js                    # Vercel 현재 날씨 서버리스 함수
+│   ├── forecast.js                   # OpenWeather 예보 서버리스 함수
+│   ├── restaurants.js                # Kakao Local 맛집 서버리스 함수
+│   └── place-preview.js              # Kakao 정적 지도 이미지 프록시
 ├── public/
 │   ├── maps/                         # 전국 및 시·도별 SVG 경계 지도
 │   └── screenshots/                  # README 화면 이미지
 ├── server/
-│   └── weatherService.js             # OpenWeather 요청·정규화·서버 캐시
+│   ├── weatherService.js             # OpenWeather 현재 날씨·서버 캐시
+│   ├── forecastService.js            # OpenWeather 예보 정규화·캐시
+│   └── kakaoRestaurantService.js     # Kakao Local 검색·캐시
 ├── src/
 │   ├── components/
 │   │   ├── exercise/                 # 단계별 과제와 완성형 기능 컴포넌트
@@ -229,7 +249,7 @@ Node.js `^20.19.0` 또는 `>=22.12.0` 환경을 사용합니다.
 
 ### 2. 환경 변수 설정
 
-`.env.example`을 복사해 프로젝트 루트에 `.env` 파일을 만들고 OpenWeather API 키를 입력합니다.
+`.env.example`을 복사해 프로젝트 루트에 `.env` 파일을 만들고 OpenWeather와 Kakao REST API 키를 입력합니다.
 
 ```sh
 cp .env.example .env
@@ -237,12 +257,15 @@ cp .env.example .env
 
 ```dotenv
 WEATHER_API_KEY=your_openweather_api_key
+KAKAO_REST_API_KEY=your_kakao_rest_api_key
 ```
 
-- `WEATHER_API_KEY`는 로컬 Vite 서버와 Vercel Function에서만 사용합니다.
+- `WEATHER_API_KEY`와 `KAKAO_REST_API_KEY`는 로컬 Vite 서버와 Vercel Function에서만 사용합니다.
 - 브라우저 번들에 포함되지 않도록 `VITE_` 접두사를 붙이지 않습니다.
 - 실제 키가 들어 있는 `.env` 파일은 Git에 커밋하지 않습니다.
 - 키가 없거나 요청이 실패해도 완성형 화면은 기존 Mock 데이터를 표시합니다.
+- Kakao Developers의 해당 앱에서 **카카오맵 → 사용 설정 → 상태 ON**을 먼저 적용해야 Local REST API가 허용됩니다.
+- 환경 변수나 Kakao 사용 설정을 변경한 뒤에는 로컬 서버와 Vercel 배포를 다시 시작해야 합니다.
 
 ### 3. 개발 서버 실행
 
@@ -250,7 +273,7 @@ WEATHER_API_KEY=your_openweather_api_key
 npm run dev
 ```
 
-기본 주소는 [http://localhost:3000/](http://localhost:3000/)입니다. Vite 개발 플러그인이 로컬에서도 `/api/weather` 요청을 처리합니다.
+기본 주소는 [http://localhost:3000/](http://localhost:3000/)입니다. Vite 개발 플러그인이 로컬에서도 `/api/weather`, `/api/forecast`, `/api/restaurants`, `/api/place-preview` 요청을 처리합니다.
 
 ### 4. 프로덕션 빌드
 
@@ -261,14 +284,15 @@ npm run preview
 
 ## Vercel 배포
 
-Vercel 프로젝트 설정에서 `WEATHER_API_KEY` 환경 변수를 등록합니다.
+Vercel 프로젝트 설정에서 `WEATHER_API_KEY`와 `KAKAO_REST_API_KEY` 환경 변수를 등록합니다.
 
-| 항목 | 값 |
-|---|---|
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Serverless Function | `api/weather.js` |
-| Environment Variable | `WEATHER_API_KEY` |
+| 항목                 | 값                                                                                |
+| -------------------- | --------------------------------------------------------------------------------- |
+| Build Command        | `npm run build`                                                                   |
+| Output Directory     | `dist`                                                                            |
+| Serverless Functions | `api/weather.js`, `api/forecast.js`, `api/restaurants.js`, `api/place-preview.js` |
+| Environment Variable | `WEATHER_API_KEY`                                                                 |
+| Environment Variable | `KAKAO_REST_API_KEY`                                                              |
 
 환경 변수를 추가하거나 변경한 뒤에는 새 배포를 실행해야 반영됩니다. `vercel.json`은 CSP, Referrer Policy, MIME Sniffing 방지, Frame 차단 등 공통 보안 헤더를 설정합니다.
 
@@ -284,18 +308,18 @@ Vercel 프로젝트 설정에서 `WEATHER_API_KEY` 환경 변수를 등록합니
 - `slot`을 이용한 공통 대시보드 카드 재사용
 - Vue Router의 동적 경로, 지연 로딩, Catch-all Route
 - Pinia의 state / getters / actions와 `storeToRefs`
-- Fetch API와 Axios를 이용한 HTTP 요청 및 에러 처리 실습
+- Axios를 이용한 현재 날씨·예보·맛집 HTTP 요청 및 에러 처리
 - `Promise.allSettled()`를 이용한 17개 지역 날씨 부분 성공 처리
 - 구조분해, 전개 연산자, 옵셔널 체이닝 등 Modern JavaScript
-- Element Plus 컴포넌트 사용 실습
+- Element Plus의 Input, Button, Alert, Skeleton, Tag, Message 적용
 
 ## 제출 전 셀프 코드리뷰
 
 - **단일 책임:** 날씨 요청·정규화·캐시는 서버 서비스로, 지도·검색·메뉴·맛집·게임·점수 UI는 기능별 컴포넌트로 분리했습니다. 메인 View는 상태와 컴포넌트를 연결합니다.
 - **반응형 상태:** 검색어·선택 지역·활성 화면·로딩처럼 UI에 반영되는 값은 `ref`로, 필터 목록·추천 날씨·랭킹·집계값은 `computed`로 관리합니다.
-- **로딩·에러 처리:** 날씨 요청을 `loading`, `success`, `partial`, `error`로 구분하고, 실패한 지역은 Mock 데이터로 유지합니다. 컴포넌트가 해제되면 진행 중인 요청도 취소합니다.
+- **로딩·에러 처리:** 날씨 요청을 `loading`, `success`, `partial`, `error`로 구분하고, 실패한 지역은 Mock 데이터로 유지합니다. 예보와 Kakao 맛집은 독립적으로 실패 처리하며 컴포넌트가 해제되면 진행 중인 Axios 요청도 취소합니다.
 - **이름 명확성:** `filteredWeatherList`, `selectedWeather`, `syncLiveWeather`, `registerGameScore`처럼 데이터와 동작이 드러나는 이름을 사용했습니다.
-- **보안:** API 키를 서버 환경에서만 읽고, 날씨 API는 GET 요청과 서버에 등록된 17개 좌표만 허용합니다.
+- **보안:** API 키를 서버 환경에서만 읽고, 외부 API 프록시는 GET 요청과 서버에 등록된 17개 지역 및 검증된 구·군만 허용합니다. CSP는 Axios JSON 실습의 `jsonplaceholder.typicode.com` 이외의 외부 브라우저 연결을 차단합니다.
 
 ## 검사
 
@@ -306,6 +330,17 @@ npx oxlint .
 ```
 
 `npm run lint`는 ESLint와 Oxlint의 자동 수정 옵션까지 함께 실행합니다.
+
+## 외부 라이브러리 및 API 적용 근거
+
+| 구분               | 실제 적용 위치                                               | 라이선스·출처                                                                   |
+| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Axios              | 현재 날씨, 5일 예보, Kakao 추천 맛집, `/practice6` JSON CRUD | [axios/axios](https://github.com/axios/axios) · MIT                             |
+| Element Plus       | `/practice3` 검색·상태 UI, 최종 앱 검색·로딩·알림·태그       | [element-plus/element-plus](https://github.com/element-plus/element-plus) · MIT |
+| OpenWeather API    | 현재 날씨 17개 지역, 지역별 5일 예보                         | [OpenWeather API](https://openweathermap.org/api)                               |
+| Kakao Map REST API | 구·군별 추천 맛집 상위 2곳과 위치 지도 미리보기              | [Kakao Map REST API](https://developers.kakao.com/docs/ko/kakaomap/rest-api)    |
+
+Axios와 Element Plus는 `package.json` 및 `package-lock.json`에 버전이 고정되어 있으며 실제 프로덕션 번들에 포함됩니다. API 키는 서버 전용 환경 변수로만 읽고 클라이언트 번들에는 포함하지 않습니다.
 
 ## 오픈소스 출처 및 라이선스
 

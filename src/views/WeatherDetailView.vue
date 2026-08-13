@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import axios from 'axios'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { weatherList } from '../components/exercise/weatherMockData'
@@ -8,6 +9,10 @@ import { useConfigStore } from '../stores/configStore'
 const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
+const forecast = ref([])
+const forecastStatus = ref('idle')
+const forecastMessage = ref('')
+let forecastRequestController = null
 
 const cityData = computed(() => weatherList.find((item) => item.id === route.params.cityId) ?? null)
 const convertTemp = (temp) => (configStore.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp)
@@ -15,6 +20,46 @@ const displayTemp = computed(() => {
   if (!cityData.value) return null
   return convertTemp(cityData.value.temp)
 })
+
+const loadForecast = async () => {
+  forecastRequestController?.abort()
+  forecast.value = []
+  forecastMessage.value = ''
+
+  if (!cityData.value) {
+    forecastStatus.value = 'idle'
+    return
+  }
+
+  forecastRequestController = new AbortController()
+  forecastStatus.value = 'loading'
+
+  try {
+    const response = await axios.get('/api/forecast', {
+      params: { regionId: cityData.value.id },
+      signal: forecastRequestController.signal,
+    })
+    if (!Array.isArray(response.data.forecast)) throw new Error('Forecast response is invalid')
+    forecast.value = response.data.forecast
+    forecastStatus.value = 'success'
+  } catch (error) {
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED') return
+    const errorCode = error.response?.data?.error
+    forecastStatus.value = 'error'
+    forecastMessage.value =
+      errorCode === 'WEATHER_API_NOT_CONFIGURED' ? 'OpenWeather API 키가 설정되지 않아 예보를 표시할 수 없습니다.' : '예보를 불러오지 못했습니다. 현재 날씨 정보는 계속 확인할 수 있습니다.'
+  }
+}
+
+const formatForecastDate = (date) =>
+  new Intl.DateTimeFormat('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    weekday: 'short',
+  }).format(new Date(`${date}T00:00:00`))
+
+watch(() => route.params.cityId, loadForecast, { immediate: true })
+onBeforeUnmount(() => forecastRequestController?.abort())
 </script>
 
 <template>
@@ -34,11 +79,44 @@ const displayTemp = computed(() => {
       </div>
 
       <dl>
-        <div><dt>최고 / 최저</dt><dd>{{ convertTemp(cityData.high) }}{{ configStore.unitSymbol }} / {{ convertTemp(cityData.low) }}{{ configStore.unitSymbol }}</dd></div>
-        <div><dt>습도</dt><dd>{{ cityData.humidity }}%</dd></div>
-        <div><dt>강수 확률</dt><dd>{{ cityData.rainChance }}%</dd></div>
-        <div><dt>풍속</dt><dd>{{ cityData.wind }}m/s</dd></div>
+        <div>
+          <dt>최고 / 최저</dt>
+          <dd>{{ convertTemp(cityData.high) }}{{ configStore.unitSymbol }} / {{ convertTemp(cityData.low) }}{{ configStore.unitSymbol }}</dd>
+        </div>
+        <div>
+          <dt>습도</dt>
+          <dd>{{ cityData.humidity }}%</dd>
+        </div>
+        <div>
+          <dt>강수 확률</dt>
+          <dd>{{ cityData.rainChance }}%</dd>
+        </div>
+        <div>
+          <dt>풍속</dt>
+          <dd>{{ cityData.wind }}m/s</dd>
+        </div>
       </dl>
+
+      <section class="forecast-section" aria-labelledby="forecast-title" :aria-busy="forecastStatus === 'loading'">
+        <div class="forecast-heading">
+          <div>
+            <small>OPENWEATHER FORECAST API</small>
+            <h2 id="forecast-title">5일 날씨 예보</h2>
+          </div>
+          <el-tag type="success" effect="plain">Axios</el-tag>
+        </div>
+
+        <el-skeleton v-if="forecastStatus === 'loading'" :rows="2" animated />
+        <el-alert v-else-if="forecastStatus === 'error'" :title="forecastMessage" type="warning" :closable="false" show-icon />
+        <div v-else-if="forecast.length" class="forecast-grid">
+          <article v-for="day in forecast" :key="day.date">
+            <strong>{{ formatForecastDate(day.date) }}</strong>
+            <span aria-hidden="true">{{ day.emoji }}</span>
+            <b>{{ convertTemp(day.max) }}{{ configStore.unitSymbol }} / {{ convertTemp(day.min) }}{{ configStore.unitSymbol }}</b>
+            <small>{{ day.status }} · 강수 {{ day.rainChance }}%</small>
+          </article>
+        </div>
+      </section>
     </section>
 
     <section v-else class="detail-card empty">
@@ -135,6 +213,63 @@ dd {
   font-weight: 800;
 }
 
+.forecast-section {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid #e6d8b9;
+}
+
+.forecast-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.forecast-heading small {
+  color: #a86412;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.forecast-heading h2 {
+  margin: 3px 0 0;
+  font-size: 1rem;
+}
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.forecast-grid article {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 6px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eadfc8;
+  border-radius: 12px;
+}
+
+.forecast-grid article > strong,
+.forecast-grid article > b {
+  font-size: 0.68rem;
+}
+
+.forecast-grid article > span {
+  font-size: 1.4rem;
+}
+
+.forecast-grid article > small {
+  color: #70766a;
+  font-size: 0.58rem;
+}
+
 .empty {
   text-align: center;
 }
@@ -160,6 +295,10 @@ dd {
 @media (max-width: 560px) {
   dl {
     grid-template-columns: 1fr;
+  }
+
+  .forecast-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>

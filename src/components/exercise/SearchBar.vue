@@ -29,19 +29,20 @@ defineEmits(['update-query', 'refresh'])
 
     <div class="search-input">
       <span v-if="variant === 'dashboard'" aria-hidden="true">⌕</span>
-      <input
+      <el-input
         :id="variant === 'dashboard' ? 'city-search' : undefined"
-        :type="variant === 'dashboard' ? 'search' : 'text'"
-        :value="currentQuery"
+        :model-value="currentQuery"
+        clearable
         placeholder="한글 도시명 검색"
-        @input="$emit('update-query', $event.target.value)"
+        :aria-label="variant === 'dashboard' ? undefined : '도시 검색'"
+        @update:model-value="$emit('update-query', $event)"
       />
     </div>
 
     <p>
       검색 중인 도시: <strong>{{ currentQuery || '전체' }}</strong>
     </p>
-    <button v-if="showRefresh" class="refresh-button" type="button" :disabled="loading" aria-label="전국 실시간 날씨 새로고침" @click="$emit('refresh')">↻</button>
+    <el-button v-if="showRefresh" class="refresh-button" circle :loading="loading" aria-label="전국 실시간 날씨 새로고침" @click="$emit('refresh')">↻</el-button>
   </div>
 </template>
 
@@ -50,9 +51,8 @@ defineEmits(['update-query', 'refresh'])
   margin-top: 0;
 }
 
-.search-bar.is-simple input {
+.search-bar.is-simple :deep(.el-input) {
   width: 90%;
-  padding: 8px;
   font-size: 14px;
 }
 
@@ -84,16 +84,18 @@ defineEmits(['update-query', 'refresh'])
   font-size: 1rem;
 }
 
-.is-dashboard .search-input input {
+.is-dashboard .search-input :deep(.el-input) {
   flex: 1;
   min-width: 0;
   height: 100%;
+}
+
+.is-dashboard .search-input :deep(.el-input__wrapper) {
   padding: 0 6px;
   color: #364034;
   font-size: 0.75rem;
   background: transparent;
-  border: 0;
-  outline: none;
+  box-shadow: none;
 }
 
 .is-dashboard > p {
@@ -108,13 +110,11 @@ defineEmits(['update-query', 'refresh'])
 }
 
 .refresh-button {
-  display: grid;
-  place-items: center;
   width: 32px;
   height: 32px;
   color: #40513b;
   background: #edf1e6;
-  border: 0;
+  border: 0 !important;
   border-radius: 9px;
 }
 

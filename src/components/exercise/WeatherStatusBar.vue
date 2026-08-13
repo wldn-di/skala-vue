@@ -8,16 +8,17 @@ defineProps({
 </script>
 
 <template>
-  <div class="status-bar" role="status">{{ message }}</div>
+  <el-alert class="status-bar" :title="message" type="success" :closable="false" show-icon />
 </template>
 
 <style scoped>
 .status-bar {
-  padding: 10px;
-  color: #2e7d32;
   font-weight: 700;
   text-align: center;
-  background: #e8f5e9;
   border-radius: 6px;
+}
+
+.status-bar :deep(.el-alert__content) {
+  width: 100%;
 }
 </style>

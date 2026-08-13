@@ -1,4 +1,6 @@
 <script setup>
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 import { onBeforeUnmount, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -21,7 +23,11 @@ const emit = defineEmits(['add-restaurant', 'remove-restaurant'])
 const form = reactive({ name: '', signatureMenu: '', note: '' })
 const formError = ref('')
 const savedMessage = ref('')
+const recommendedRestaurants = ref([])
+const recommendationStatus = ref('idle')
+const recommendationMessage = ref('')
 let messageTimer
+let recommendationRequestController = null
 
 const resetForm = () => {
   form.name = ''
@@ -47,10 +53,48 @@ const submitRestaurant = () => {
   emit('add-restaurant', { name, signatureMenu, note })
   resetForm()
   savedMessage.value = `${props.region.name} ${props.districtName} 맛집으로 등록했습니다.`
+  ElMessage.success(savedMessage.value)
   window.clearTimeout(messageTimer)
   messageTimer = window.setTimeout(() => {
     savedMessage.value = ''
   }, 2200)
+}
+
+const loadRecommendedRestaurants = async () => {
+  recommendationRequestController?.abort()
+  recommendedRestaurants.value = []
+  recommendationMessage.value = ''
+
+  if (!props.region.id || !props.districtName) {
+    recommendationStatus.value = 'idle'
+    return
+  }
+
+  recommendationRequestController = new AbortController()
+  recommendationStatus.value = 'loading'
+
+  try {
+    const response = await axios.get('/api/restaurants', {
+      params: {
+        regionId: props.region.id,
+        district: props.districtName,
+      },
+      signal: recommendationRequestController.signal,
+    })
+    if (!Array.isArray(response.data.restaurants)) throw new Error('Restaurant response is invalid')
+    recommendedRestaurants.value = response.data.restaurants
+    recommendationStatus.value = 'success'
+  } catch (error) {
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED') return
+    const errorCode = error.response?.data?.error
+    recommendationStatus.value = 'error'
+    recommendationMessage.value =
+      errorCode === 'KAKAO_API_NOT_CONFIGURED'
+        ? 'Kakao REST API 키를 등록하면 이 지역의 추천 맛집을 확인할 수 있습니다.'
+        : errorCode === 'KAKAO_MAP_SERVICE_DISABLED'
+          ? 'Kakao Developers에서 이 앱의 카카오맵 API 사용 설정을 ON으로 활성화해 주세요.'
+          : 'Kakao 추천 맛집을 불러오지 못했습니다. 직접 등록 기능은 계속 사용할 수 있습니다.'
+  }
 }
 
 const deleteRestaurant = (restaurant) => {
@@ -64,10 +108,15 @@ watch(
   () => {
     resetForm()
     savedMessage.value = ''
+    loadRecommendedRestaurants()
   },
+  { immediate: true },
 )
 
-onBeforeUnmount(() => window.clearTimeout(messageTimer))
+onBeforeUnmount(() => {
+  window.clearTimeout(messageTimer)
+  recommendationRequestController?.abort()
+})
 </script>
 
 <template>
@@ -78,6 +127,30 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
         <b v-for="food in region.popularFoods" :key="food">{{ food }}</b>
       </div>
     </div>
+
+    <section class="recommended-restaurants" :aria-busy="recommendationStatus === 'loading'" aria-labelledby="recommended-restaurants-title">
+      <div class="recommended-heading">
+        <div>
+          <small>KAKAO LOCAL REST API</small>
+          <strong id="recommended-restaurants-title">{{ districtName }} 추천 맛집 상위 2곳</strong>
+        </div>
+        <el-tag size="small" type="warning" effect="plain">외부 API</el-tag>
+      </div>
+
+      <el-skeleton v-if="recommendationStatus === 'loading'" :rows="2" animated />
+      <el-alert v-else-if="recommendationStatus === 'error'" :title="recommendationMessage" type="warning" :closable="false" show-icon />
+      <div v-else-if="recommendedRestaurants.length" class="recommended-list">
+        <a v-for="restaurant in recommendedRestaurants" :key="restaurant.id" :href="restaurant.placeUrl" target="_blank" rel="noopener noreferrer">
+          <img :src="restaurant.previewUrl" :alt="`${restaurant.name} 위치 지도 미리보기`" width="480" height="180" loading="lazy" />
+          <div>
+            <strong>{{ restaurant.name }}</strong>
+            <span>{{ restaurant.address || restaurant.category }}</span>
+            <small>{{ restaurant.phone || '카카오맵에서 상세보기' }} · 상세보기 ↗</small>
+          </div>
+        </a>
+      </div>
+      <p v-else-if="recommendationStatus === 'success'" class="recommended-empty">검색된 추천 맛집이 없습니다.</p>
+    </section>
 
     <form class="restaurant-form" @submit.prevent="submitRestaurant">
       <div class="form-title">
@@ -112,24 +185,14 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
     </form>
 
     <div class="restaurant-list" aria-live="polite">
-      <article
-        v-for="restaurant in restaurants"
-        :key="restaurant.id"
-        class="restaurant-item"
-      >
+      <article v-for="restaurant in restaurants" :key="restaurant.id" class="restaurant-item">
         <span aria-hidden="true">🍽️</span>
         <div>
           <strong>{{ restaurant.name }}</strong>
           <small>{{ restaurant.signatureMenu }}</small>
           <p v-if="restaurant.note">“{{ restaurant.note }}”</p>
         </div>
-        <button
-          type="button"
-          :aria-label="`${restaurant.name} 삭제`"
-          @click="deleteRestaurant(restaurant)"
-        >
-          ×
-        </button>
+        <button type="button" :aria-label="`${restaurant.name} 삭제`" @click="deleteRestaurant(restaurant)">×</button>
       </article>
 
       <div v-if="restaurants.length === 0" class="restaurant-empty">
@@ -178,6 +241,110 @@ onBeforeUnmount(() => window.clearTimeout(messageTimer))
   background: #fff;
   border: 1px solid #ffd8bc;
   border-radius: 999px;
+}
+
+.recommended-restaurants {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #eadfc8;
+  border-radius: 14px;
+}
+
+.recommended-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.recommended-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.recommended-heading small {
+  color: #a86412;
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.recommended-heading strong {
+  margin-top: 2px;
+  color: #364034;
+  font-size: 0.72rem;
+}
+
+.recommended-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.recommended-list a {
+  overflow: hidden;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #eee4d1;
+  border-radius: 9px;
+}
+
+.recommended-list img {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  background: #f3eddf;
+}
+
+.recommended-list a > div {
+  min-width: 0;
+  padding: 8px 9px;
+}
+
+.recommended-list a:hover,
+.recommended-list a:focus-visible {
+  border-color: #d8ad3d;
+  outline: none;
+}
+
+.recommended-list strong,
+.recommended-list span,
+.recommended-list small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recommended-list strong {
+  color: #364034;
+  font-size: 0.66rem;
+}
+
+.recommended-list span,
+.recommended-list small,
+.recommended-empty {
+  margin-top: 2px;
+  color: #8f9187;
+  font-size: 0.55rem;
+}
+
+.recommended-empty {
+  margin-bottom: 0;
+}
+
+.recommended-restaurants :deep(.el-alert) {
+  padding: 7px 9px;
+}
+
+.recommended-restaurants :deep(.el-alert__title) {
+  font-size: 0.6rem;
+  line-height: 1.4;
 }
 
 .restaurant-form {
