@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import { foodCategories, foodList } from './foodMockData'
 
@@ -15,7 +15,9 @@ const selectedCategory = ref('전체')
 const resultFood = ref(null)
 const displayedFood = ref(null)
 const isSpinning = ref(false)
-let spinTimer
+const drawHistory = ref([])
+
+const DRAW_HISTORY_STORAGE_KEY = 'weather-bite-menu-draw-history'
 
 const categoryEmoji = {
   한식: '🍚',
@@ -44,11 +46,7 @@ const tagLabel = computed(
     })[weatherTag.value],
 )
 
-const categoryFoods = computed(() =>
-  selectedCategory.value === '전체'
-    ? foodList
-    : foodList.filter((food) => food.category === selectedCategory.value),
-)
+const categoryFoods = computed(() => (selectedCategory.value === '전체' ? foodList : foodList.filter((food) => food.category === selectedCategory.value)))
 
 const candidateFoods = computed(() => {
   if (mode.value === 'random') return categoryFoods.value
@@ -70,24 +68,67 @@ const recommendationReason = computed(() => {
 
 const pickRandom = (foods) => foods[Math.floor(Math.random() * foods.length)]
 
+const saveDrawHistory = () => {
+  try {
+    window.localStorage.setItem(DRAW_HISTORY_STORAGE_KEY, JSON.stringify(drawHistory.value))
+  } catch {
+    // 저장 공간을 사용할 수 없어도 메뉴 뽑기는 계속 동작한다.
+  }
+}
+
+const loadDrawHistory = () => {
+  try {
+    const storedHistory = JSON.parse(window.localStorage.getItem(DRAW_HISTORY_STORAGE_KEY) ?? '[]')
+    if (!Array.isArray(storedHistory)) return
+
+    drawHistory.value = storedHistory
+      .filter((item) => item && typeof item.name === 'string' && typeof item.category === 'string' && typeof item.drawnAt === 'string' && !Number.isNaN(Date.parse(item.drawnAt)))
+      .map((item, index) => ({
+        ...item,
+        id: typeof item.id === 'string' ? item.id : `${item.drawnAt}-${item.foodId ?? index}`,
+      }))
+  } catch {
+    drawHistory.value = []
+  }
+}
+
+const formatDrawTime = (drawnAt) =>
+  new Intl.DateTimeFormat('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(drawnAt))
+
 const drawMenu = async () => {
   if (isSpinning.value || candidateFoods.value.length === 0) return
 
+  const drawPool = [...candidateFoods.value]
+  const drawMode = mode.value
+  const drawWeatherLabel = tagLabel.value
   isSpinning.value = true
-  spinTimer = window.setInterval(() => {
-    displayedFood.value = pickRandom(candidateFoods.value)
-  }, 65)
 
   await new Promise((resolve) => window.setTimeout(resolve, 910))
-  window.clearInterval(spinTimer)
 
-  const finalPool = candidateFoods.value.filter((food) => food.id !== resultFood.value?.id)
-  resultFood.value = pickRandom(finalPool.length ? finalPool : candidateFoods.value)
+  const finalPool = drawPool.filter((food) => food.id !== resultFood.value?.id)
+  resultFood.value = pickRandom(finalPool.length ? finalPool : drawPool)
   displayedFood.value = resultFood.value
   isSpinning.value = false
+
+  const drawnAt = new Date().toISOString()
+  drawHistory.value.unshift({
+    id: `${drawnAt}-${resultFood.value.id}`,
+    foodId: resultFood.value.id,
+    name: resultFood.value.name,
+    category: resultFood.value.category,
+    mode: drawMode,
+    weatherLabel: drawWeatherLabel,
+    drawnAt,
+  })
+  saveDrawHistory()
 }
 
-onBeforeUnmount(() => window.clearInterval(spinTimer))
+onMounted(loadDrawHistory)
 </script>
 
 <template>
@@ -95,42 +136,37 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
     <div class="menu-intro">
       <p>DINNER PICKER · 100 MENUS</p>
       <h1>오늘 저녁, 날씨한입이 골라드릴게요</h1>
-      <span>
-        {{ weather.emoji }} {{ weather.name }} {{ weather.temp }}° · {{ weather.status }}
-      </span>
+      <span> {{ weather.emoji }} {{ weather.name }} {{ weather.temp }}° · {{ weather.status }} </span>
     </div>
 
     <div class="menu-layout">
       <article class="roulette-card">
-        <div class="roulette-orbit" :class="{ spinning: isSpinning }">
-          <span class="orbit-food one">🍜</span>
-          <span class="orbit-food two">🥘</span>
-          <span class="orbit-food three">🍣</span>
-          <div class="result-plate">
-            <span v-if="displayedFood" aria-hidden="true">
-              {{ categoryEmoji[displayedFood.category] }}
-            </span>
-            <b v-else aria-hidden="true">?</b>
-          </div>
-        </div>
+        <div class="food-picker-stage" :class="{ spinning: isSpinning }">
+          <img class="food-picker-image" src="/food.png" alt="오늘은 뭐 먹지? 저녁 메뉴 뽑기 안내" />
 
-        <div class="result-copy" aria-live="polite">
-          <template v-if="displayedFood">
-            <small>{{ displayedFood.category }} · {{ mode === 'weather' ? tagLabel : '완전 랜덤' }}</small>
-            <h2>{{ displayedFood.name }}</h2>
-            <p v-if="!isSpinning">{{ recommendationReason }}</p>
-            <p v-else>100개 메뉴를 맛있게 섞는 중이에요…</p>
-          </template>
-          <template v-else>
-            <small>READY TO PICK</small>
-            <h2>오늘은 뭘 먹을까요?</h2>
-            <p>취향을 고르고 아래 버튼을 눌러보세요.</p>
-          </template>
+          <div v-if="isSpinning || displayedFood" class="draw-result-card" aria-live="polite">
+            <template v-if="isSpinning">
+              <small>MENU PICKING</small>
+              <div>
+                <span aria-hidden="true">🎲</span>
+                <h2>메뉴 고르는 중…</h2>
+              </div>
+              <p>선택한 조건에서 맛있는 메뉴를 찾고 있어요.</p>
+            </template>
+            <template v-else>
+              <small>{{ displayedFood.category }} · {{ mode === 'weather' ? tagLabel : '완전 랜덤' }}</small>
+              <div>
+                <span aria-hidden="true">{{ categoryEmoji[displayedFood.category] }}</span>
+                <h2>{{ displayedFood.name }}</h2>
+              </div>
+              <p>{{ recommendationReason }}</p>
+            </template>
+          </div>
         </div>
 
         <button class="draw-button" type="button" :disabled="isSpinning" @click="drawMenu">
           <span aria-hidden="true">🎲</span>
-          {{ isSpinning ? '메뉴 고르는 중…' : resultFood ? '다시 뽑기' : '저녁 메뉴 뽑기' }}
+          {{ isSpinning ? '메뉴 고르는 중…' : '저녁메뉴뽑기' }}
         </button>
       </article>
 
@@ -144,20 +180,12 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
             <span>{{ candidateFoods.length }}개 후보</span>
           </div>
           <div class="mode-buttons">
-            <button
-              type="button"
-              :class="{ active: mode === 'weather' }"
-              @click="mode = 'weather'"
-            >
+            <button type="button" :disabled="isSpinning" :class="{ active: mode === 'weather' }" @click="mode = 'weather'">
               <span aria-hidden="true">{{ weather.emoji }}</span>
               <b>날씨 맞춤</b>
               <small>{{ tagLabel }} 메뉴만</small>
             </button>
-            <button
-              type="button"
-              :class="{ active: mode === 'random' }"
-              @click="mode = 'random'"
-            >
+            <button type="button" :disabled="isSpinning" :class="{ active: mode === 'random' }" @click="mode = 'random'">
               <span aria-hidden="true">🎰</span>
               <b>완전 랜덤</b>
               <small>고민 없이 아무거나</small>
@@ -173,21 +201,32 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
             </div>
           </div>
           <div class="category-buttons">
-            <button
-              v-for="category in foodCategories"
-              :key="category"
-              type="button"
-              :class="{ active: selectedCategory === category }"
-              @click="selectedCategory = category"
-            >
+            <button v-for="category in foodCategories" :key="category" type="button" :disabled="isSpinning" :class="{ active: selectedCategory === category }" @click="selectedCategory = category">
               {{ category === '전체' ? '✨' : categoryEmoji[category] }} {{ category }}
             </button>
           </div>
         </div>
 
-        <div class="menu-cloud" aria-label="등록된 메뉴 미리보기">
-          <span v-for="food in foodList.slice(0, 24)" :key="food.id">{{ food.name }}</span>
-          <b>+ {{ foodList.length - 24 }}개</b>
+        <div class="draw-history" aria-live="polite">
+          <div class="history-heading">
+            <div>
+              <small>MY PICKS</small>
+              <strong>내가 뽑은 메뉴</strong>
+            </div>
+            <span>{{ drawHistory.length }}개</span>
+          </div>
+
+          <p v-if="drawHistory.length === 0" class="empty-history">저녁 메뉴를 뽑으면 이곳에 최신순으로 저장돼요.</p>
+          <ol v-else>
+            <li v-for="item in drawHistory" :key="item.id">
+              <span aria-hidden="true">{{ categoryEmoji[item.category] ?? '🍽️' }}</span>
+              <div>
+                <strong>{{ item.name }}</strong>
+                <small>{{ item.category }} · {{ item.mode === 'weather' ? item.weatherLabel : '완전 랜덤' }}</small>
+              </div>
+              <time :datetime="item.drawnAt">{{ formatDrawTime(item.drawnAt) }}</time>
+            </li>
+          </ol>
         </div>
       </aside>
     </div>
@@ -256,111 +295,86 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  padding: 25px;
-  background: radial-gradient(circle at 50% 35%, #fff5ed, transparent 15rem), #fff;
+  padding: 20px;
+  background: #fff;
 }
 
-.roulette-orbit {
+.food-picker-stage {
   position: relative;
   display: grid;
+  flex: 1;
   place-items: center;
-  width: clamp(200px, 29vh, 270px);
-  height: clamp(200px, 29vh, 270px);
-  border: 1px dashed #ffd2b5;
-  border-radius: 50%;
+  width: min(100%, 550px);
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 24px;
 }
 
-.roulette-orbit::before,
-.roulette-orbit::after {
+.food-picker-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 24px;
+  transition:
+    filter 180ms ease,
+    transform 220ms ease;
+}
+
+.food-picker-stage.spinning .food-picker-image {
+  filter: blur(4px) brightness(0.78);
+  transform: scale(1.02);
+}
+
+.draw-result-card {
   position: absolute;
-  border: 1px solid #ffe5d4;
-  border-radius: 50%;
-  content: '';
-  inset: 18px;
-}
-
-.roulette-orbit::after {
-  border-color: #fff0e6;
-  inset: 38px;
-}
-
-.roulette-orbit.spinning {
-  animation: pulse 520ms ease-in-out infinite alternate;
-}
-
-.orbit-food {
-  position: absolute;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  font-size: 1.3rem;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(191, 89, 25, 0.13);
-}
-
-.orbit-food.one {
-  top: 14px;
-  left: 22px;
-}
-
-.orbit-food.two {
-  top: 44%;
-  right: -8px;
-}
-
-.orbit-food.three {
-  bottom: 2px;
-  left: 24%;
-}
-
-.result-plate {
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 115px;
-  height: 115px;
-  background: linear-gradient(145deg, #fff, #fff7f1);
-  border: 8px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 17px 40px rgba(196, 86, 18, 0.17), inset 0 0 0 1px #ffe8d8;
-}
-
-.result-plate span,
-.result-plate b {
-  font-size: 3.4rem;
-}
-
-.result-plate b {
-  color: #ff9a5a;
-}
-
-.result-copy {
-  min-height: 100px;
-  margin-top: 16px;
+  top: 55%;
+  left: 50%;
+  width: min(360px, calc(100% - 44px));
+  min-height: 106px;
+  padding: 14px 18px;
+  box-sizing: border-box;
   text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 185, 127, 0.8);
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(102, 55, 20, 0.2);
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(7px);
 }
 
-.result-copy small {
-  color: #ff7a2d;
-  font-size: 0.63rem;
+.draw-result-card > small {
+  color: #e9681d;
+  font-size: 0.6rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
 }
 
-.result-copy h2 {
+.draw-result-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin: 4px 0;
+}
+
+.draw-result-card span {
+  font-size: 1.6rem;
+}
+
+.draw-result-card h2 {
+  margin: 0;
   color: #2d382b;
-  font-size: clamp(1.8rem, 4vh, 2.8rem);
+  font-size: clamp(1.45rem, 3.4vh, 2.25rem);
   letter-spacing: -0.06em;
 }
 
-.result-copy p {
+.draw-result-card p {
   margin: 0;
-  color: #8f9187;
-  font-size: 0.7rem;
+  color: #70766a;
+  font-size: 0.65rem;
 }
 
 .draw-button {
@@ -370,7 +384,7 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   gap: 8px;
   width: min(310px, 100%);
   min-height: 50px;
-  margin-top: 10px;
+  margin-top: 12px;
   color: #fff;
   font-size: 0.82rem;
   font-weight: 850;
@@ -456,6 +470,11 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   box-shadow: inset 0 0 0 1px #d8ad3d;
 }
 
+.mode-buttons button:disabled,
+.category-buttons button:disabled {
+  cursor: default;
+}
+
 .mode-buttons button > span {
   grid-row: 1 / 3;
   align-self: center;
@@ -495,39 +514,111 @@ onBeforeUnmount(() => window.clearInterval(spinTimer))
   border-color: #a86412;
 }
 
-.menu-cloud {
+.draw-history {
   display: flex;
   flex: 1;
-  align-content: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-direction: column;
   min-height: 0;
   padding: 13px;
   background: linear-gradient(145deg, #fff9f4, #fff);
-  border: 1px dashed #ffd9bf;
+  border: 1px solid #f0d9c8;
   border-radius: 16px;
   overflow: hidden;
 }
 
-.menu-cloud span,
-.menu-cloud b {
-  padding: 5px 7px;
+.history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 9px;
+}
+
+.history-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-heading small {
+  color: #e9681d;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+.history-heading strong {
+  margin-top: 2px;
+  color: #364034;
+  font-size: 0.76rem;
+}
+
+.history-heading > span {
+  padding: 5px 8px;
   color: #9b633f;
-  font-size: 0.52rem;
-  background: #fff;
-  border: 1px solid #ffe4d3;
+  font-size: 0.55rem;
+  font-weight: 800;
+  background: #fff1e6;
   border-radius: 999px;
 }
 
-.menu-cloud b {
-  color: #e9681d;
+.empty-history {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  margin: 0;
+  color: #9a8d80;
+  font-size: 0.62rem;
+  text-align: center;
 }
 
-@keyframes pulse {
-  to {
-    transform: scale(1.025) rotate(1deg);
-  }
+.draw-history ol {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  padding: 0 2px 0 0;
+  margin: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.draw-history li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 9px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #f3e2d5;
+  border-radius: 11px;
+}
+
+.draw-history li > span {
+  font-size: 1.05rem;
+}
+
+.draw-history li > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.draw-history li strong {
+  overflow: hidden;
+  color: #3a4336;
+  font-size: 0.66rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.draw-history li small,
+.draw-history time {
+  color: #91877c;
+  font-size: 0.51rem;
+}
+
+.draw-history time {
+  white-space: nowrap;
 }
 
 @media (max-width: 900px) {
